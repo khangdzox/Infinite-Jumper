@@ -54,8 +54,10 @@ class PlayState < GameState
             when :boost
               @player.jump(-22)
               @player.roll
+              @sfx_boing = Gosu::Sample.new('sound/sfx_boing.mp3').play
             when :break
               platform.break
+              @sfx_break = Gosu::Sample.new('sound/sfx_break.mp3').play 
             else
               @player.jump
             end

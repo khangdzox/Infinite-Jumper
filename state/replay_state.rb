@@ -11,6 +11,7 @@ class ReplayState < GameState
     @background_color = 0xFF_82C4FF
     @font = Gosu::Font.new(35, bold: true, name: "./img/DoodleJump.ttf")
     @game_over = Gosu::Image.new("./img/game_over_title.png")
+    @sfx_fall = Gosu::Sample.new('sound/sfx_fall.mp3').play
 
     menu_img, play_again_img, menu_img_pressed, play_again_img_pressed = *Gosu::Image.load_tiles("./img/buttons.png", 114, 41)
     @replay_button = Button.new(60, 330, 114, 41, play_again_img, play_again_img_pressed)

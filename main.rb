@@ -1,6 +1,6 @@
-require './state/game_state'
-require './state/menu_state'
-require './state/play_state'
+require './state/game_state.rb'
+require './state/menu_state.rb'
+require './state/play_state.rb'
 
 class MainWindow < Gosu::Window
   attr_accessor :state
@@ -9,6 +9,7 @@ class MainWindow < Gosu::Window
     super Window::WIDTH, Window::HEIGHT
     self.caption = "Infinite Jumper"
     @state = state
+    @bgm = Gosu::Sample.new('sound/bgm_01.mp3').play
   end
 
   def draw

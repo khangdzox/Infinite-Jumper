@@ -41,6 +41,7 @@ class MenuState < GameState
     @player.move_y
     if @play_button.clicked?($window.mouse_x, $window.mouse_y)
       @outro = true
+      @sfx_enter = Gosu::Sample.new('sound/sfx_enter.mp3').play
     end
     if @outro == false
       GameState.switch(PlayState.new)
