@@ -8,24 +8,30 @@ class PlayState < GameState
   def initialize
     super
     @platforms = []
-    23.downto(-30) do |i|
-      @platforms << Platform.new(:static, 30 + rand(341), i * 25)
+    19.downto(-30) do |i|
+      @platforms << StaticPlatform.new(30 + rand(341), i * 30)
     end
 
     @player = Player.new(@platforms[0].x, 600)
     @player.jump(-15)
 
     @highest_standable_platform = @platforms.last
+    @test = []
+    @test << @highest_standable_platform.top
 
     @background_color = 0xFF_82C4FF
+
+    # @bgm = Gosu::Song.new('sound/bgm_01.mp3')
 
     @god_mode = false
   end
 
   def enter
+    # @bgm.play
   end
 
   def leave
+    # @bgm.stop
   end
 
   def draw
@@ -47,33 +53,50 @@ class PlayState < GameState
         platform.drop if platform.broken != nil
       end
 
-      if @player.vy > 0
+      if @player.vy > 0 and not @player.is_dead
         if platform.bottom > HeightLimit + 60
           if @player.collide_with(platform)
             case platform.type
             when :boost
+              platform.active
               @player.jump(-22)
               @player.roll
+              @player.play_sound(:jump)
             when :break
               platform.break
+            when :spike
+              if platform.spike
+                @player.damage
+              end
+              @platforms.each do |p|
+                if p.type == :spike
+                  p.change_state
+                end
+              end
+              @player.jump
+              @player.play_sound(:jump)
             else
               @player.jump
+              @player.play_sound(:jump)
             end
           end
         end
       end
     end
 
-    if not @god_mode
-      if Gosu.button_down?(Gosu::KB_A) or Gosu.button_down?(Gosu::KB_LEFT)
-        @player.move_left
-      elsif Gosu.button_down?(Gosu::KB_D) or Gosu.button_down?(Gosu::KB_RIGHT)
-        @player.move_right
+    if not @player.is_dead
+
+      if not @god_mode
+        if Gosu.button_down?(Gosu::KB_A) or Gosu.button_down?(Gosu::KB_LEFT)
+          @player.move_left if not @player.is_hurt
+        elsif Gosu.button_down?(Gosu::KB_D) or Gosu.button_down?(Gosu::KB_RIGHT)
+          @player.move_right if not @player.is_hurt
+        else
+          @player.slow_down
+        end
       else
-        @player.slow_down
+        @player.set_x($window.mouse_x)
       end
-    else
-      @player.set_x($window.mouse_x)
     end
 
     @player.fall
@@ -89,25 +112,29 @@ class PlayState < GameState
     end
 
     if @platforms.last.top > 5
-      if @highest_standable_platform.top > 90
-        @platforms << @highest_standable_platform = generate_random_standable_platform
-      elsif @highest_standable_platform.top > 70
-        if rand(100) < 50
-          @platforms << @highest_standable_platform = generate_random_standable_platform
-        elsif rand(100) < 30
-          @platforms << generate_random_breakable_platform
-        end
+      if @highest_standable_platform.top > 80
+        @platforms += generate_random_standable_platform
+        @highest_standable_platform = @platforms.last
       elsif @highest_standable_platform.top > 50
-        if rand(100) < 30
-          @platforms << @highest_standable_platform = generate_random_standable_platform
+        if rand(100) < 50
+          @platforms += generate_random_standable_platform
+          @highest_standable_platform = @platforms.last
         elsif rand(100) < 30
-          @platforms << generate_random_breakable_platform
+          @platforms += generate_random_breakable_platform
+        end
+      elsif @highest_standable_platform.top > 30
+        if rand(100) < 30
+          @platforms += generate_random_standable_platform
+          @highest_standable_platform = @platforms.last
+        elsif rand(100) < 30
+          @platforms += generate_random_breakable_platform
         end
       elsif @highest_standable_platform.top > 10
         if rand(100) < 10
-          @platforms << @highest_standable_platform = generate_random_standable_platform
+          @platforms += generate_random_standable_platform
+          @highest_standable_platform = @platforms.last
         elsif rand(100) < 10
-          @platforms << generate_random_breakable_platform
+          @platforms += generate_random_breakable_platform
         end
       end
     end

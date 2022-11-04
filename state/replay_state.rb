@@ -9,20 +9,21 @@ class ReplayState < GameState
     @score = score
     @player = Player.new(last_x, -60)
     @background_color = 0xFF_82C4FF
-    @font = Gosu::Font.new(35, bold: true, name: "./img/DoodleJump.ttf")
-    @game_over = Gosu::Image.new("./img/game_over_title.png")
+    @font = Gosu::Font.new(35, bold: true, name: "img/DoodleJump.ttf")
+    @game_over = Gosu::Image.new("img/game_over_title.png")
+    @sfx_fall = Gosu::Sample.new('sound/fall.mp3') 
 
-    menu_img, play_again_img, menu_img_pressed, play_again_img_pressed = *Gosu::Image.load_tiles("./img/buttons.png", 114, 41)
+    menu_img, play_again_img, menu_img_pressed, play_again_img_pressed = *Gosu::Image.load_tiles("img/buttons.png", 114, 41)
     @replay_button = Button.new(60, 330, 114, 41, play_again_img, play_again_img_pressed)
     @menu_button = Button.new(226, 330, 114, 41, menu_img, menu_img_pressed)
 
     @next_state = nil
 
-    high_score_file = File.new("./highscore.txt", "r")
+    high_score_file = File.new("highscore.txt", "r")
     @highscore = high_score_file.read.to_i
     high_score_file.close
     if @highscore < @score
-      high_score_file = File.new("./highscore.txt", "w")
+      high_score_file = File.new("highscore.txt", "w")
       high_score_file.write(@score)
       high_score_file.close
       @highscore = @score
@@ -30,6 +31,7 @@ class ReplayState < GameState
   end
 
   def enter
+    @sfx_fall.play
   end
 
   def leave

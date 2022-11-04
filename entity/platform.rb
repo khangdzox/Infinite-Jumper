@@ -3,50 +3,137 @@ require './modules'
 def generate_random_standable_platform
   case rand(20)
   when 0
-    Platform.new(:boost , 30 + rand(341), -20)
-  when 1..3
-    MoveablePlatform.new( 30 + rand(341), -20)
+    [
+      SpikePlatform.new(30 + rand(341), -20, false),
+      SpikePlatform.new(30 + rand(341), -60, rand(2)%2==0),
+      SpikePlatform.new(30 + rand(341), -100, rand(2)%2==0)
+    ]
+  when 1..2
+    [BoostPlatform.new(30 + rand(341), -20)]
+  when 3..5
+    [MoveablePlatform.new(30 + rand(341), -20)]
   else
-    Platform.new(:static, 30 + rand(341), -20)
+    [StaticPlatform.new(30 + rand(341), -20)]
   end
 end
 
 def generate_random_breakable_platform
-  BreakablePlatform.new(30 + rand(341), -20)
+  [BreakablePlatform.new(30 + rand(341), -20)]
 end
 
-class Platform
+class StaticPlatform
   attr_reader :type, :top, :bottom, :left, :right, :x
 
-  def initialize(type, x, y)
-    @type = type
-    @img_static, @img_move, @img_boost, @img_white = *Gosu::Image.load_tiles("./img/platforms.png", 57, 15)
+  def initialize(x, y)
+    @type = :static
+    @img = Gosu::Image.new("./img/static_platform.png")
     @x = x
     @y = y
     @w = 57
     @h = 15
 
-    @top = @y
-    @bottom = @y + @h
+    @top = @y - @h/2
+    @bottom = @y + @h/2
     @left = @x - @w/2
     @right = @x + @w/2
   end
 
+  def info
+    puts("Static: #{@x}, #{@y}, top: #{@top}")
+  end
+
   def move_y(y)
     @y -= y
-    @top = @y
-    @bottom = @y + @h
+    @top = @y - @h/2
+    @bottom = @y + @h/2
   end
 
   def draw
-    case @type
-    when :static
-      @img_static.draw(@x - @w/2, @y, ZOrder::PLATFORMS)
-    when :boost
-      @img_boost.draw(@x - @w/2, @y, ZOrder::PLATFORMS)
-    when :white
-      @img_white.draw(@x - @w/2, @y, ZOrder::PLATFORMS)
+    @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
+  end
+end
+
+class SpikePlatform
+  attr_reader :type, :top, :bottom, :left, :right, :x, :spike
+
+  def initialize(x, y, spike)
+    @type = :spike
+    @img_normal, @img_active = *Gosu::Image.load_tiles("./img/spike_platform.png", 57, 35)
+    @img = @img_normal
+    @x = x
+    @y = y
+    @w = 57
+    @h = 15
+    @spike = spike
+    @start_delay = 0
+    @delay_time = 200
+
+    @top = @y - @h/2
+    @bottom = @y + @h/2
+    @left = @x - @w/2
+    @right = @x + @w/2
+  end
+
+  def info
+    puts("Spike : #{@x}, #{@y}, top: #{@top}")
+  end
+
+  def change_state
+    @spike = !@spike
+    @start_delay = Gosu.milliseconds
+  end
+
+  def move_y(y)
+    @y -= y
+    @top = @y - @h/2
+    @bottom = @y + @h/2
+  end
+
+  def draw
+    if @spike and (Gosu.milliseconds - @start_delay > @delay_time)
+      @img = @img_active
+    elsif not @spike and (Gosu.milliseconds - @start_delay > @delay_time)
+      @img = @img_normal
     end
+    @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
+  end
+end
+
+class BoostPlatform
+  attr_reader :type, :top, :bottom, :left, :right, :x
+
+  def initialize(x, y)
+    @type = :boost
+    @img, @img_active = *Gosu::Image.load_tiles("./img/boost_platform.png", 57, 45)
+    @sfx_boing = Gosu::Sample.new('sound/boost.mp3')
+    @x = x
+    @y = y
+    @w = 57
+    @h = 15
+
+    @top = @y - @h/2
+    @bottom = @y + @h/2
+    @left = @x - @w/2
+    @right = @x + @w/2
+  end
+
+  def info
+    puts("Boost : #{@x}, #{@y}, top: #{@top}")
+  end
+
+  def move_y(y)
+    @y -= y
+    @top = @y - @h/2
+    @bottom = @y + @h/2
+  end
+
+  def active
+    @img = @img_active
+    @sfx_boing.play
+  end
+
+  def draw
+    @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
   end
 end
 
@@ -63,16 +150,20 @@ class MoveablePlatform
     @dir = 1
     @vx = 1
 
-    @top = @y
-    @bottom = @y + @h
+    @top = @y - @h/2
+    @bottom = @y + @h/2
     @left = @x - @w/2
     @right = @x + @w/2
   end
 
+  def info
+    puts("Move  : #{@x}, #{@y}, top: #{@top}")
+  end
+
   def move_y(y)
     @y -= y
-    @top = @y
-    @bottom = @y + @h
+    @top = @y - @h/2
+    @bottom = @y + @h/2
   end
 
   def move_around
@@ -85,7 +176,7 @@ class MoveablePlatform
   end
 
   def draw
-    @img_move.draw(@x - @w/2, @y, ZOrder::PLATFORMS)
+    @img_move.draw_rot(@x, @y, ZOrder::PLATFORMS)
   end
 end
 
@@ -95,6 +186,7 @@ class BreakablePlatform
   def initialize(x, y)
     @type = :break
     @img_break = Gosu::Image.load_tiles("./img/breakable_platform.png", 60, 33)
+    @sfx_break = Gosu::Sample.new('sound/break.mp3')
     @x = x
     @y = y
     @w = 60
@@ -102,36 +194,42 @@ class BreakablePlatform
     @broken = nil
     @vy = 2
 
-    @top = @y
-    @bottom = @y + @h
+    @top = @y - @h/2
+    @bottom = @y + @h/2
     @left = @x - @w/2
     @right = @x + @w/2
   end
 
+  def info
+    puts("Break : #{@x}, #{@y}, top: #{@top}")
+  end
+
   def break
-    @broken = Gosu.milliseconds if @broken == nil
+    @broken = Gosu.milliseconds and @sfx_break.play if @broken == nil
   end
 
   def drop
     @vy += Gravity
     @y += @vy
+    @top = @y - @h/2
+    @bottom = @y + @h/2
   end
 
   def move_y(y)
     @y -= y
-    @top = @y
-    @bottom = @y + @h
+    @top = @y - @h/2
+    @bottom = @y + @h/2
   end
 
   def draw
     if @broken == nil
-      @img_break[0].draw(@x - @w/2, @y, ZOrder::PLATFORMS)
+      @img_break[0].draw_rot(@x, @y, ZOrder::PLATFORMS)
     elsif Gosu.milliseconds - @broken < 50
-      @img_break[1].draw(@x - @w/2, @y, ZOrder::PLATFORMS)
+      @img_break[1].draw_rot(@x, @y, ZOrder::PLATFORMS)
     elsif Gosu.milliseconds - @broken < 100
-      @img_break[2].draw(@x - @w/2, @y, ZOrder::PLATFORMS)
+      @img_break[2].draw_rot(@x, @y, ZOrder::PLATFORMS)
     else
-      @img_break[3].draw(@x - @w/2, @y, ZOrder::PLATFORMS)
+      @img_break[3].draw_rot(@x, @y, ZOrder::PLATFORMS)
     end
   end
 end

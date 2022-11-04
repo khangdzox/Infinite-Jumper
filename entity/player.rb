@@ -7,8 +7,9 @@ class Player
     @state = States::FALL
     @img_left = Gosu::Image.new("img/lik-left.png")
     @img_right = Gosu::Image.new("img/lik-right.png")
+    @img_stars = Gosu::Image.new("img/stars.png")
     @img_heart = Gosu::Image.new("img/heart.png")
-    @sound = Gosu::Sample
+    @sfx_jump = Gosu::Sample.new("sound/jump.wav")
     @x = x
     @y = y
     @w = 62
@@ -20,11 +21,20 @@ class Player
     @font_score = Gosu::Font.new(40, bold: true, name: "Consolas")
     @dir = 'left'
     @roll = nil
+    @dead = false
+    @time_start_hurt = nil
 
     @top = @y - @h/2
     @bottom = @y + @h/2
     @left = @x - 15
     @right = @x + 15
+  end
+
+  def play_sound(sound)
+    case sound
+    when :jump
+      @sfx_jump.play
+    end
   end
 
   def roll
@@ -41,6 +51,30 @@ class Player
     end
   end
 
+  def damage
+    @heart -= 1
+    @time_start_hurt = Gosu.milliseconds
+  end
+
+  def insta_death
+    @heart = 0
+  end
+
+  def is_dead
+    return true if @heart <= 0
+    return false
+  end
+
+  def is_hurt
+    return false if @time_start_hurt.nil?
+    if Gosu.milliseconds - @time_start_hurt > 750
+      @time_start_hurt = nil
+      return false
+    else
+      return true
+    end
+  end
+
   def fall
     @vy += @ay
   end
@@ -51,7 +85,7 @@ class Player
 
   def move_left
     @dir = 'left'
-    if @vx > -8
+    if @vx > -6
       @ax = -0.4
       @vx += @ax
     end
@@ -59,7 +93,7 @@ class Player
 
   def move_right
     @dir = 'right'
-    if @vx < 8
+    if @vx < 6
       @ax = 0.4
       @vx += @ax
     end
@@ -136,10 +170,11 @@ class Player
       img = @img_right
     end
     if @roll == nil
-      img.draw(@x - @w/2, @y - @h/2, ZOrder::PLAYER)
+      img.draw_rot(@x, @y, ZOrder::PLAYER)
     else
       img.draw_rot(@x, @y, ZOrder::PLAYER, degree_since_roll)
     end
+    @img_stars.draw_rot(@x, @top, ZOrder::PLAYER) if is_hurt or is_dead
   end
 
   def draw_score
