@@ -8,12 +8,12 @@ class PlayState < GameState
   def initialize
     super
     @platforms = []
-    19.downto(-30) do |i|
+    19.downto(-10) do |i|
       @platforms << StaticPlatform.new(30 + rand(341), i * 30)
     end
 
     @player = Player.new(@platforms[0].x, 600)
-    @player.jump(-15)
+    @player.jump(-13, 0)
 
     @highest_standable_platform = @platforms.last
     @test = []
@@ -21,17 +21,18 @@ class PlayState < GameState
 
     @background_color = 0xFF_82C4FF
 
-    # @bgm = Gosu::Song.new('sound/bgm_01.mp3')
+    @bgm = Gosu::Song.new('sound/Insert-Quarter.mp3')
+    @bgm.volume = 0.15
 
     @god_mode = false
   end
 
   def enter
-    # @bgm.play
+    @bgm.play(true)
   end
 
   def leave
-    # @bgm.stop
+    @bgm.stop
   end
 
   def draw
@@ -61,7 +62,6 @@ class PlayState < GameState
               platform.active
               @player.jump(-22)
               @player.roll
-              @player.play_sound(:jump)
             when :break
               platform.break
             when :spike
@@ -74,10 +74,8 @@ class PlayState < GameState
                 end
               end
               @player.jump
-              @player.play_sound(:jump)
             else
               @player.jump
-              @player.play_sound(:jump)
             end
           end
         end
@@ -113,25 +111,25 @@ class PlayState < GameState
 
     if @platforms.last.top > 5
       if @highest_standable_platform.top > 80
-        @platforms += generate_random_standable_platform
+        @platforms += generate_random_standable_platform(@highest_standable_platform.x, 70)
         @highest_standable_platform = @platforms.last
       elsif @highest_standable_platform.top > 50
         if rand(100) < 50
-          @platforms += generate_random_standable_platform
+          @platforms += generate_random_standable_platform(@highest_standable_platform.x, 120)
           @highest_standable_platform = @platforms.last
         elsif rand(100) < 30
           @platforms += generate_random_breakable_platform
         end
       elsif @highest_standable_platform.top > 30
         if rand(100) < 30
-          @platforms += generate_random_standable_platform
+          @platforms += generate_random_standable_platform(@highest_standable_platform.x, 180)
           @highest_standable_platform = @platforms.last
         elsif rand(100) < 30
           @platforms += generate_random_breakable_platform
         end
       elsif @highest_standable_platform.top > 10
         if rand(100) < 10
-          @platforms += generate_random_standable_platform
+          @platforms += generate_random_standable_platform(@highest_standable_platform.x, 200)
           @highest_standable_platform = @platforms.last
         elsif rand(100) < 10
           @platforms += generate_random_breakable_platform

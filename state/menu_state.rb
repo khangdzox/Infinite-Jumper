@@ -12,19 +12,19 @@ class MenuState < GameState
     play_img = Gosu::Image.new("./img/play.png")
     play_img_pressed = Gosu::Image.new("./img/play-on.png")
     @play_button = Button.new(50, 150, 111, 40, play_img, play_img_pressed)
-    # @sfx_enter = Gosu::Sample.new('sound/sfx_enter.mp3')
-    # @bgm_title = Gosu::Song.new('sound/title.mp3')
+    @bgm = Gosu::Song.new('sound/Analog-Nostalgia.mp3')
+    @bgm.volume = 0.3
     @platform = StaticPlatform.new(80, 500)
     @player = Player.new(80, 630)
-    @player.jump(-15)
+    @player.jump(-15, 0)
   end
 
   def enter
-    # @bgm_title.play
+    @bgm.play(true)
   end
 
   def leave
-    # @bgm_title.stop
+    @bgm.stop
   end
 
   def draw
@@ -40,7 +40,6 @@ class MenuState < GameState
   def update
     if @player.vy > 0 and @player.collide_with(@platform)
       @player.jump
-      @player.play_sound(:jump)
     end
     @player.fall
     @player.move_y

@@ -79,8 +79,9 @@ class Player
     @vy += @ay
   end
 
-  def jump(vy = -11)
+  def jump(vy = -11, vol = 1)
     @vy = vy
+    @sfx_jump.play(vol)
   end
 
   def move_left
@@ -169,12 +170,17 @@ class Player
     when 'right'
       img = @img_right
     end
-    if @roll == nil
-      img.draw_rot(@x, @y, ZOrder::PLAYER)
+    if is_hurt and ((Gosu.milliseconds - @time_start_hurt)/50).to_i.even?
+      opacity = 0x66_ffffff
     else
-      img.draw_rot(@x, @y, ZOrder::PLAYER, degree_since_roll)
+      opacity = 0xff_ffffff
     end
-    @img_stars.draw_rot(@x, @top, ZOrder::PLAYER) if is_hurt or is_dead
+    if @roll == nil
+      img.draw_rot(@x, @y, ZOrder::PLAYER, 0, 0.5, 0.5, 1, 1, opacity)
+    else
+      img.draw_rot(@x, @y, ZOrder::PLAYER, degree_since_roll, 0.5, 0.5, 1, 1, opacity)
+    end
+    @img_stars.draw_rot(@x, @top, ZOrder::PLAYER, 0, 0.5, 0.5, 1, 1, opacity) if is_hurt or is_dead
   end
 
   def draw_score

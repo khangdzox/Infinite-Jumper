@@ -1,19 +1,29 @@
 require './modules'
 
-def generate_random_standable_platform
-  case rand(20)
-  when 0
+def generate_random_standable_platform(last_x, limit)
+  case rand(30)
+  when 0..1
     [
-      SpikePlatform.new(30 + rand(341), -20, false),
+      SpikePlatform.new(30 + (last_x + rand(limit*2+1) - limit) %340, -20, false),
       SpikePlatform.new(30 + rand(341), -60, rand(2)%2==0),
-      SpikePlatform.new(30 + rand(341), -100, rand(2)%2==0)
+      SpikePlatform.new(30 + rand(341), -100, true),
+      StaticPlatform.new(30 + rand(341), -140)
     ]
-  when 1..2
-    [BoostPlatform.new(30 + rand(341), -20)]
-  when 3..5
-    [MoveablePlatform.new(30 + rand(341), -20)]
+  when 2..3
+    [
+      BoostPlatform.new(30 + (last_x + rand(limit*2+1) - limit) %340, -20),
+      StaticPlatform.new(30 + rand(341), -70)
+    ]
+  when 4..5
+    [HorizontalMoveablePlatform.new(30 + rand(341), -20)]
+  when 7
+    [
+      VerticalMoveablePlatform.new(temp = 30 + (last_x - rand(limit+1)) %270, -20, 1),
+      VerticalMoveablePlatform.new(temp + 70, -158, -1),
+      StaticPlatform.new(30 + rand(341), -240)
+    ]
   else
-    [StaticPlatform.new(30 + rand(341), -20)]
+    [StaticPlatform.new(30 + (last_x + rand(limit*2+1) - limit) %340, -20)]
   end
 end
 
@@ -58,7 +68,8 @@ class SpikePlatform
 
   def initialize(x, y, spike)
     @type = :spike
-    @img_normal, @img_active = *Gosu::Image.load_tiles("./img/spike_platform.png", 57, 35)
+    @img_normal, @img_active = *Gosu::Image.load_tiles("img/spike_platform.png", 57, 35)
+    @sfx_spike = Gosu::Sample.new("sound/piston.wav")
     @img = @img_normal
     @x = x
     @y = y
@@ -79,6 +90,7 @@ class SpikePlatform
   end
 
   def change_state
+    @sfx_spike.play(0.3)
     @spike = !@spike
     @start_delay = Gosu.milliseconds
   end
@@ -137,12 +149,12 @@ class BoostPlatform
   end
 end
 
-class MoveablePlatform
+class HorizontalMoveablePlatform
   attr_reader :type, :top, :bottom, :left, :right, :x
 
   def initialize(x, y)
     @type = :move
-    @img_move = Gosu::Image.load_tiles("./img/platforms.png", 57, 15)[1]
+    @img_move = Gosu::Image.new("./img/horizontal_moveable_platform.png")
     @x = x
     @y = y
     @w = 57
@@ -180,8 +192,53 @@ class MoveablePlatform
   end
 end
 
+class VerticalMoveablePlatform
+  attr_reader :type, :top, :bottom, :left, :right, :x
+
+  def initialize(x, y, dir)
+    @type = :move
+    @img_move = Gosu::Image.new("./img/vertical_moveable_platform.png")
+    @x = x
+    @y = y
+    @w = 57
+    @h = 15
+    @dir = dir
+    @vy = 1
+    @t = 0
+
+    @top = @y - @h/2
+    @bottom = @y + @h/2
+    @left = @x - @w/2
+    @right = @x + @w/2
+  end
+
+  def info
+    puts("Move  : #{@x}, #{@y}, top: #{@top}")
+  end
+
+  def move_y(y)
+    @y -= y
+    @top = @y - @h/2
+    @bottom = @y + @h/2
+  end
+
+  def move_around
+    if Gosu.milliseconds - @t > 2500
+      @dir = - @dir
+      @t = Gosu.milliseconds
+    end
+    @y += @vy * @dir
+    @top = @y - @h/2
+    @bottom = @y + @h/2
+  end
+
+  def draw
+    @img_move.draw_rot(@x, @y, ZOrder::PLATFORMS)
+  end
+end
+
 class BreakablePlatform
-  attr_reader :type, :top, :bottom, :left, :right, :broken
+  attr_reader :type, :top, :bottom, :left, :right, :x, :broken
 
   def initialize(x, y)
     @type = :break
@@ -205,7 +262,7 @@ class BreakablePlatform
   end
 
   def break
-    @broken = Gosu.milliseconds and @sfx_break.play if @broken == nil
+    @broken = Gosu.milliseconds and @sfx_break.play(0.5) if @broken == nil
   end
 
   def drop
