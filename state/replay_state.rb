@@ -4,10 +4,11 @@ require_relative "./game_state"
 require_relative "./play_state"
 
 class ReplayState < GameState
-  def initialize(score, last_x)
+  def initialize(score, last_x, last_dir)
     super()
     @score = score
     @player = Player.new(last_x, -60)
+    @player.dir = last_dir
     @background_color = 0xFF_82C4FF
     @font = Gosu::Font.new(35, bold: true, name: "img/DoodleJump.ttf")
     @game_over = Gosu::Image.new("img/game_over_title.png")

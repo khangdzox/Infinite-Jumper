@@ -13,7 +13,7 @@ class MenuState < GameState
     play_img_pressed = Gosu::Image.new("./img/play-on.png")
     @play_button = Button.new(50, 150, 111, 40, play_img, play_img_pressed)
     @bgm = Gosu::Song.new('sound/Analog-Nostalgia.mp3')
-    @bgm.volume = 0.3
+    @bgm.volume = 0.7
     @platform = StaticPlatform.new(80, 500)
     @player = Player.new(80, 630)
     @player.jump(-15, 0)

@@ -22,7 +22,7 @@ class PlayState < GameState
     @background_color = 0xFF_82C4FF
 
     @bgm = Gosu::Song.new('sound/Insert-Quarter.mp3')
-    @bgm.volume = 0.15
+    @bgm.volume = 0.4
 
     @god_mode = false
   end
@@ -138,7 +138,7 @@ class PlayState < GameState
     end
 
     if @player.top >= Window::HEIGHT
-      GameState.switch(ReplayState.new(@player.score, @player.x))
+      GameState.switch(ReplayState.new(@player.score, @player.x, @player.dir))
     end
 
     if Gosu.button_down?(Gosu::KB_A) and Gosu.button_down?(Gosu::KB_B)

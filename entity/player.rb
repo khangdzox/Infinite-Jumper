@@ -1,7 +1,7 @@
 require './modules'
 
 class Player
-  attr_accessor :score, :left, :right, :bottom, :top, :vx, :vy, :y, :x
+  attr_accessor :score, :left, :right, :bottom, :top, :vx, :vy, :y, :x, :dir
 
   def initialize(x, y)
     @state = States::FALL
@@ -19,7 +19,7 @@ class Player
     @heart = 3
     @score = 0
     @font_score = Gosu::Font.new(40, bold: true, name: "Consolas")
-    @dir = 'left'
+    @dir = 'right'
     @roll = nil
     @dead = false
     @time_start_hurt = nil
