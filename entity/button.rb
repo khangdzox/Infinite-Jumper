@@ -12,7 +12,7 @@ class Button
   end
 
   def mouse_in?(mouse_x, mouse_y)
-    if (@x <= mouse_x and mouse_x <= @x + @w) and (@y <= mouse_y and mouse_y <= @y + @h)
+    if (@x - @w/2 <= mouse_x and mouse_x <= @x + @w/2) and (@y - @h/2 <= mouse_y and mouse_y <= @y + @h/2)
       @img = @pressed
       return true
     else
@@ -30,6 +30,6 @@ class Button
   end
 
   def draw
-    @img.draw(@x, @y, ZOrder::UI)
+    @img.draw_rot(@x, @y, ZOrder::UI)
   end
 end

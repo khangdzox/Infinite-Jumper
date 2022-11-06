@@ -4,14 +4,14 @@ require_relative "./game_state"
 require_relative "./play_state"
 
 class MenuState < GameState
-  def initialize
-    super
+  def initialize(window)
+    super(window)
     @font = Gosu::Font.new(40, name: "./img/DoodleJump.ttf")
     @background_color = 0xFF_82C4FF
     @title = Gosu::Image.new("./img/doodle-jump.png")
     play_img = Gosu::Image.new("./img/play.png")
     play_img_pressed = Gosu::Image.new("./img/play-on.png")
-    @play_button = Button.new(50, 150, 111, 40, play_img, play_img_pressed)
+    @play_button = Button.new(270, 270, 111, 40, play_img, play_img_pressed)
     @bgm = Gosu::Song.new('sound/Analog-Nostalgia.mp3')
     @bgm.volume = 0.7
     @platform = StaticPlatform.new(80, 500)
@@ -32,7 +32,7 @@ class MenuState < GameState
     outro if @outro
     @platform.draw
     @player.draw
-    @title.draw(20, 70, ZOrder::UI)
+    @title.draw_rot(150, 200, ZOrder::UI)
     @play_button.draw
     Gosu.draw_rect(0, 0, Window::WIDTH, Window::HEIGHT, @background_color)
   end
@@ -43,12 +43,11 @@ class MenuState < GameState
     end
     @player.fall
     @player.move_y
-    if @play_button.clicked?($window.mouse_x, $window.mouse_y)
+    if @play_button.clicked?(@window.mouse_x, @window.mouse_y)
       @outro = true
-      # @sfx_enter.play(1.0, 1.0, false)
     end
     if @outro == false
-      GameState.switch(PlayState.new)
+      @window.switch(PlayState.new(@window))
     end
   end
 end

@@ -1,7 +1,8 @@
 require './modules'
 
 class GameState
-  def initialize
+  def initialize(window)
+    @window = window
     @intro = true
     @intro_ani_index = 255
     @outro = nil
@@ -18,12 +19,6 @@ class GameState
     Gosu.draw_rect(0, 0, Window::WIDTH, Window::HEIGHT, Gosu::Color.new(@outro_ani_index, 0, 0, 0), ZOrder::OVERLAY)
     @outro_ani_index += 10
     @outro = false if @outro_ani_index > 256
-  end
-
-  def self.switch(new_state)
-    $window.state && $window.state.leave
-    $window.state = new_state
-    new_state.enter
   end
 
   def enter

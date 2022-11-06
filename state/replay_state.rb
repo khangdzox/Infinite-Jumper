@@ -4,8 +4,8 @@ require_relative "./game_state"
 require_relative "./play_state"
 
 class ReplayState < GameState
-  def initialize(score, last_x, last_dir)
-    super()
+  def initialize(window, score, last_x, last_dir)
+    super(window)
     @score = score
     @player = Player.new(last_x, -60)
     @player.dir = last_dir
@@ -15,8 +15,8 @@ class ReplayState < GameState
     @sfx_fall = Gosu::Sample.new('sound/fall.mp3') 
 
     menu_img, play_again_img, menu_img_pressed, play_again_img_pressed = *Gosu::Image.load_tiles("img/buttons.png", 114, 41)
-    @replay_button = Button.new(60, 330, 114, 41, play_again_img, play_again_img_pressed)
-    @menu_button = Button.new(226, 330, 114, 41, menu_img, menu_img_pressed)
+    @replay_button = Button.new(110, 330, 114, 41, play_again_img, play_again_img_pressed)
+    @menu_button = Button.new(290, 330, 114, 41, menu_img, menu_img_pressed)
 
     @next_state = nil
 
@@ -44,7 +44,7 @@ class ReplayState < GameState
     @game_over.draw(80, 112, ZOrder::UI)
     @font.draw_text("your score: #{@score}", 110, 210, ZOrder::UI, 1, 1, Gosu::Color::BLACK)
     @font.draw_text("your high score: #{@highscore}", 62, 240, ZOrder::UI, 1, 1, Gosu::Color::BLACK)
-    @font.draw_text("your name: #{"no info"}", 117, 270, ZOrder::UI, 1, 1, Gosu::Color::BLACK)
+    # @font.draw_text("your name: #{"no info"}", 117, 270, ZOrder::UI, 1, 1, Gosu::Color::BLACK)
     @menu_button.draw
     @replay_button.draw
     if @player != nil
@@ -53,16 +53,16 @@ class ReplayState < GameState
   end
 
   def update
-    if @menu_button.clicked?($window.mouse_x, $window.mouse_y) and @outro.nil?
+    if @menu_button.clicked?(@window.mouse_x, @window.mouse_y) and @outro.nil?
       @outro = true
-      @next_state = MenuState.new
+      @next_state = MenuState.new(@window)
     end
-    if @replay_button.clicked?($window.mouse_x, $window.mouse_y) and @outro.nil?
+    if @replay_button.clicked?(@window.mouse_x, @window.mouse_y) and @outro.nil?
       @outro = true
-      @next_state = PlayState.new
+      @next_state = PlayState.new(@window)
     end
     if @outro == false
-      GameState.switch(@next_state)
+      @window.switch(@next_state)
     end
     if @player != nil
       @player.fall

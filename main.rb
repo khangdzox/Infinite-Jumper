@@ -18,8 +18,14 @@ class MainWindow < Gosu::Window
   def update
     @state.update
   end
+
+  def switch(new_state)
+    @state && @state.leave
+    @state = new_state
+    new_state.enter
+  end
 end
 
-$window = MainWindow.new
-GameState.switch(MenuState.new)
-$window.show
+window = MainWindow.new
+window.switch(MenuState.new(window))
+window.show

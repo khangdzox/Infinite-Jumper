@@ -5,8 +5,9 @@ require_relative './game_state'
 require_relative './replay_state'
 
 class PlayState < GameState
-  def initialize
-    super
+  def initialize(window)
+    super(window)
+
     @platforms = []
     19.downto(-10) do |i|
       @platforms << StaticPlatform.new(30 + rand(341), i * 30)
@@ -23,8 +24,6 @@ class PlayState < GameState
 
     @bgm = Gosu::Song.new('sound/Insert-Quarter.mp3')
     @bgm.volume = 0.4
-
-    @god_mode = false
   end
 
   def enter
@@ -83,17 +82,12 @@ class PlayState < GameState
     end
 
     if not @player.is_dead
-
-      if not @god_mode
-        if Gosu.button_down?(Gosu::KB_A) or Gosu.button_down?(Gosu::KB_LEFT)
-          @player.move_left if not @player.is_hurt
-        elsif Gosu.button_down?(Gosu::KB_D) or Gosu.button_down?(Gosu::KB_RIGHT)
-          @player.move_right if not @player.is_hurt
-        else
-          @player.slow_down
-        end
+      if Gosu.button_down?(Gosu::KB_A) or Gosu.button_down?(Gosu::KB_LEFT)
+        @player.move_left if not @player.is_hurt
+      elsif Gosu.button_down?(Gosu::KB_D) or Gosu.button_down?(Gosu::KB_RIGHT)
+        @player.move_right if not @player.is_hurt
       else
-        @player.set_x($window.mouse_x)
+        @player.slow_down
       end
     end
 
@@ -138,7 +132,7 @@ class PlayState < GameState
     end
 
     if @player.top >= Window::HEIGHT
-      GameState.switch(ReplayState.new(@player.score, @player.x, @player.dir))
+      @window.switch(ReplayState.new(@window, @player.score, @player.x, @player.dir))
     end
 
     if Gosu.button_down?(Gosu::KB_A) and Gosu.button_down?(Gosu::KB_B)
