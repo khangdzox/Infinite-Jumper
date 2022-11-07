@@ -18,8 +18,8 @@ def generate_random_standable_platform(last_x, limit)
     [HorizontalMoveablePlatform.new(30 + rand(341), -20)]
   when 7
     [
-      VerticalMoveablePlatform.new(temp = 30 + (last_x - rand(limit+1)) %270, -20, 1),
-      VerticalMoveablePlatform.new(temp + 70, -158, -1),
+      VerticalMoveablePlatform.new(temp = 30 + (last_x - rand(limit+1)) %270, -20, -1),
+      VerticalMoveablePlatform.new(temp + 70, -158, 1),
       StaticPlatform.new(30 + rand(341), -240)
     ]
   else
@@ -212,7 +212,7 @@ class VerticalMoveablePlatform
     @h = 15
     @dir = dir
     @vy = 1
-    @t = 0
+    @t = Gosu.milliseconds
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
     # @top = @y - @h/2

@@ -5,15 +5,7 @@ module Window
 end
 
 module ZOrder
-  BACKGROUND, PLATFORMS, PLAYER, UI, OVERLAY = *0..4
-end
-
-module States
-  FALL, JUMP = 5, 6
-end
-
-module Types
-  STATIC, MOVE, BREAK, BOOST = *7..10
+  BACKGROUND, PLATFORMS, MONSTERS, PLAYER, UI, OVERLAY = *0..5
 end
 
 Gravity = 0.4

@@ -5,7 +5,6 @@ class Player
   attr_accessor :score, :hitbox, :vx, :vy, :y, :x, :dir
 
   def initialize(x, y)
-    @state = States::FALL
     @img_left = Gosu::Image.new("img/lik-left.png")
     @img_right = Gosu::Image.new("img/lik-right.png")
     @img_stars = Gosu::Image.new("img/stars.png")
@@ -192,7 +191,7 @@ class Player
 
   def draw_heart
     @heart.times do |i|
-      @img_heart.draw(10 + i*35, 10, ZOrder::UI)
+      @img_heart.draw_rot(25 + i*35, 25, ZOrder::UI)
     end
   end
 end
