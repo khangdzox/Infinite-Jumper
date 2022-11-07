@@ -32,7 +32,7 @@ def generate_random_breakable_platform
 end
 
 class StaticPlatform
-  attr_reader :type, :top, :bottom, :left, :right, :x
+  attr_reader :type, :hitbox, :x
 
   def initialize(x, y)
     @type = :static
@@ -42,10 +42,11 @@ class StaticPlatform
     @w = 57
     @h = 15
 
-    @top = @y - @h/2
-    @bottom = @y + @h/2
-    @left = @x - @w/2
-    @right = @x + @w/2
+    @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
+    # @top = @y - @h/2
+    # @bottom = @y + @h/2
+    # @left = @x - @w/2
+    # @right = @x + @w/2
   end
 
   def info
@@ -54,17 +55,18 @@ class StaticPlatform
 
   def move_y(y)
     @y -= y
-    @top = @y - @h/2
-    @bottom = @y + @h/2
+    @hitbox.top -= y
+    @hitbox.bottom -= y
   end
 
   def draw
     @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
+    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
 class SpikePlatform
-  attr_reader :type, :top, :bottom, :left, :right, :x, :spike
+  attr_reader :type, :hitbox, :x, :spike
 
   def initialize(x, y, spike)
     @type = :spike
@@ -79,10 +81,11 @@ class SpikePlatform
     @start_delay = 0
     @delay_time = 200
 
-    @top = @y - @h/2
-    @bottom = @y + @h/2
-    @left = @x - @w/2
-    @right = @x + @w/2
+    @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
+    # @top = @y - @h/2
+    # @bottom = @y + @h/2
+    # @left = @x - @w/2
+    # @right = @x + @w/2
   end
 
   def info
@@ -97,8 +100,8 @@ class SpikePlatform
 
   def move_y(y)
     @y -= y
-    @top = @y - @h/2
-    @bottom = @y + @h/2
+    @hitbox.top = @y - @h/2
+    @hitbox.bottom = @y + @h/2
   end
 
   def draw
@@ -108,11 +111,12 @@ class SpikePlatform
       @img = @img_normal
     end
     @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
+    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
 class BoostPlatform
-  attr_reader :type, :top, :bottom, :left, :right, :x
+  attr_reader :type, :hitbox, :x
 
   def initialize(x, y)
     @type = :boost
@@ -123,10 +127,11 @@ class BoostPlatform
     @w = 57
     @h = 15
 
-    @top = @y - @h/2
-    @bottom = @y + @h/2
-    @left = @x - @w/2
-    @right = @x + @w/2
+    @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
+    # @top = @y - @h/2
+    # @bottom = @y + @h/2
+    # @left = @x - @w/2
+    # @right = @x + @w/2
   end
 
   def info
@@ -135,8 +140,8 @@ class BoostPlatform
 
   def move_y(y)
     @y -= y
-    @top = @y - @h/2
-    @bottom = @y + @h/2
+    @hitbox.top -= y
+    @hitbox.bottom -= y
   end
 
   def active
@@ -146,11 +151,12 @@ class BoostPlatform
 
   def draw
     @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
+    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
 class HorizontalMoveablePlatform
-  attr_reader :type, :top, :bottom, :left, :right, :x
+  attr_reader :type, :hitbox, :x
 
   def initialize(x, y)
     @type = :move
@@ -162,10 +168,11 @@ class HorizontalMoveablePlatform
     @dir = 1
     @vx = 1
 
-    @top = @y - @h/2
-    @bottom = @y + @h/2
-    @left = @x - @w/2
-    @right = @x + @w/2
+    @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
+    # @top = @y - @h/2
+    # @bottom = @y + @h/2
+    # @left = @x - @w/2
+    # @right = @x + @w/2
   end
 
   def info
@@ -174,8 +181,8 @@ class HorizontalMoveablePlatform
 
   def move_y(y)
     @y -= y
-    @top = @y - @h/2
-    @bottom = @y + @h/2
+    @hitbox.top -= y
+    @hitbox.bottom -= y
   end
 
   def move_around
@@ -183,17 +190,18 @@ class HorizontalMoveablePlatform
       @dir = - @dir
     end
     @x += @vx * @dir
-    @left = @x - @w/2
-    @right = @x + @w/2
+    @hitbox.left += @vx * @dir
+    @hitbox.right += @vx * @dir
   end
 
   def draw
     @img_move.draw_rot(@x, @y, ZOrder::PLATFORMS)
+    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
 class VerticalMoveablePlatform
-  attr_reader :type, :top, :bottom, :left, :right, :x
+  attr_reader :type, :hitbox, :x
 
   def initialize(x, y, dir)
     @type = :move
@@ -206,10 +214,11 @@ class VerticalMoveablePlatform
     @vy = 1
     @t = 0
 
-    @top = @y - @h/2
-    @bottom = @y + @h/2
-    @left = @x - @w/2
-    @right = @x + @w/2
+    @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
+    # @top = @y - @h/2
+    # @bottom = @y + @h/2
+    # @left = @x - @w/2
+    # @right = @x + @w/2
   end
 
   def info
@@ -218,8 +227,8 @@ class VerticalMoveablePlatform
 
   def move_y(y)
     @y -= y
-    @top = @y - @h/2
-    @bottom = @y + @h/2
+    @hitbox.top -= y
+    @hitbox.bottom -= y
   end
 
   def move_around
@@ -228,21 +237,22 @@ class VerticalMoveablePlatform
       @t = Gosu.milliseconds
     end
     @y += @vy * @dir
-    @top = @y - @h/2
-    @bottom = @y + @h/2
+    @hitbox.top += @vy * @dir
+    @hitbox.bottom += @vy * @dir
   end
 
   def draw
     @img_move.draw_rot(@x, @y, ZOrder::PLATFORMS)
+    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
 class BreakablePlatform
-  attr_reader :type, :top, :bottom, :left, :right, :x, :broken
+  attr_reader :type, :hitbox, :x, :broken
 
   def initialize(x, y)
     @type = :break
-    @img_break = Gosu::Image.load_tiles("./img/breakable_platform.png", 60, 33)
+    @img_break = Gosu::Image.load_tiles("./img/breakable_platform.png", 60, 51)
     @sfx_break = Gosu::Sample.new('sound/break.mp3')
     @x = x
     @y = y
@@ -251,10 +261,11 @@ class BreakablePlatform
     @broken = nil
     @vy = 2
 
-    @top = @y - @h/2
-    @bottom = @y + @h/2
-    @left = @x - @w/2
-    @right = @x + @w/2
+    @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
+    # @top = @y - @h/2
+    # @bottom = @y + @h/2
+    # @left = @x - @w/2
+    # @right = @x + @w/2
   end
 
   def info
@@ -268,14 +279,14 @@ class BreakablePlatform
   def drop
     @vy += Gravity
     @y += @vy
-    @top = @y - @h/2
-    @bottom = @y + @h/2
+    @hitbox.top += @vy
+    @hitbox.bottom += @vy
   end
 
   def move_y(y)
     @y -= y
-    @top = @y - @h/2
-    @bottom = @y + @h/2
+    @hitbox.top -= y
+    @hitbox.bottom -= y
   end
 
   def draw
@@ -288,5 +299,6 @@ class BreakablePlatform
     else
       @img_break[3].draw_rot(@x, @y, ZOrder::PLATFORMS)
     end
+    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end

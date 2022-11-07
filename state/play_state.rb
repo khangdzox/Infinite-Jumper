@@ -17,8 +17,6 @@ class PlayState < GameState
     @player.jump(-13, 0)
 
     @highest_standable_platform = @platforms.last
-    @test = []
-    @test << @highest_standable_platform.top
 
     @background_color = 0xFF_82C4FF
 
@@ -54,7 +52,7 @@ class PlayState < GameState
       end
 
       if @player.vy > 0 and not @player.is_dead
-        if platform.bottom > HeightLimit + 60
+        if platform.hitbox.bottom > HeightLimit + 60
           if @player.collide_with(platform)
             case platform.type
             when :boost
@@ -92,9 +90,9 @@ class PlayState < GameState
     end
 
     @player.fall
-    if @player.vy < 0 and @player.top <= HeightLimit
-      @platforms.each { |platform| platform.move_y(@player.vy + @player.top - HeightLimit)}
-      @platforms.reject! { |platform| platform.bottom >= Window::HEIGHT}
+    if @player.vy < 0 and @player.hitbox.top <= HeightLimit
+      @platforms.each { |platform| platform.move_y(@player.vy + @player.hitbox.top - HeightLimit)}
+      @platforms.reject! { |platform| platform.hitbox.bottom >= Window::HEIGHT}
       @player.set_top(HeightLimit)
       @player.move_x
       @player.score += 1
@@ -103,25 +101,25 @@ class PlayState < GameState
       @player.move_x
     end
 
-    if @platforms.last.top > 5
-      if @highest_standable_platform.top > 80
+    if @platforms.last.hitbox.top > 5
+      if @highest_standable_platform.hitbox.top > 80
         @platforms += generate_random_standable_platform(@highest_standable_platform.x, 70)
         @highest_standable_platform = @platforms.last
-      elsif @highest_standable_platform.top > 50
+      elsif @highest_standable_platform.hitbox.top > 50
         if rand(100) < 50
           @platforms += generate_random_standable_platform(@highest_standable_platform.x, 120)
           @highest_standable_platform = @platforms.last
         elsif rand(100) < 30
           @platforms += generate_random_breakable_platform
         end
-      elsif @highest_standable_platform.top > 30
+      elsif @highest_standable_platform.hitbox.top > 30
         if rand(100) < 30
           @platforms += generate_random_standable_platform(@highest_standable_platform.x, 180)
           @highest_standable_platform = @platforms.last
         elsif rand(100) < 30
           @platforms += generate_random_breakable_platform
         end
-      elsif @highest_standable_platform.top > 10
+      elsif @highest_standable_platform.hitbox.top > 10
         if rand(100) < 10
           @platforms += generate_random_standable_platform(@highest_standable_platform.x, 200)
           @highest_standable_platform = @platforms.last
@@ -131,7 +129,7 @@ class PlayState < GameState
       end
     end
 
-    if @player.top >= Window::HEIGHT
+    if @player.hitbox.top >= Window::HEIGHT
       @window.switch(ReplayState.new(@window, @player.score, @player.x, @player.dir))
     end
 

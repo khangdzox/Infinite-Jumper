@@ -1,6 +1,4 @@
-require './state/game_state'
 require './state/menu_state'
-require './state/play_state'
 
 class MainWindow < Gosu::Window
   attr_accessor :state

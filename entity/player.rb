@@ -1,7 +1,8 @@
 require './modules'
+require_relative './hitbox'
 
 class Player
-  attr_accessor :score, :left, :right, :bottom, :top, :vx, :vy, :y, :x, :dir
+  attr_accessor :score, :hitbox, :vx, :vy, :y, :x, :dir
 
   def initialize(x, y)
     @state = States::FALL
@@ -12,7 +13,7 @@ class Player
     @sfx_jump = Gosu::Sample.new("sound/jump.wav")
     @x = x
     @y = y
-    @w = 62
+    @w = 30
     @h = 60
     @vx = @vy = @ax = 0
     @ay = Gravity
@@ -24,18 +25,19 @@ class Player
     @dead = false
     @time_start_hurt = nil
 
-    @top = @y - @h/2
-    @bottom = @y + @h/2
-    @left = @x - 15
-    @right = @x + 15
+    @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
+    # @top = @y - @h/2
+    # @bottom = @y + @h/2
+    # @left = @x - 15
+    # @right = @x + 15
   end
 
-  def play_sound(sound)
-    case sound
-    when :jump
-      @sfx_jump.play
-    end
-  end
+  # def play_sound(sound)
+  #   case sound
+  #   when :jump
+  #     @sfx_jump.play
+  #   end
+  # end
 
   def roll
     @roll = Gosu.milliseconds
@@ -121,8 +123,8 @@ class Player
   def move_y
     @y += @vy
 
-    @top = @y - @h/2
-    @bottom = @y + @h/2
+    @hitbox.top += @vy
+    @hitbox.bottom += @vy
   end
 
   def move_x
@@ -130,38 +132,38 @@ class Player
 
     @x = @x % Window::WIDTH
 
-    @left = @x - 15
-    @right = @x + 15
+    @hitbox.left = @x - @w / 2
+    @hitbox.right = @x + @w / 2
   end
 
   def set_top(top)
     @y = top + @h/2
-    @top = top
-    @bottom = top + @h
+    @hitbox.top = top
+    @hitbox.bottom = top + @h
   end
 
-  def set_x(x)
-    @x = x
+  # def set_x(x)
+  #   @x = x
 
-    @x = @x % Window::WIDTH
+  #   @x = @x % Window::WIDTH
 
-    @left = @x - 15
-    @right = @x + 15
-  end
+  #   @left = @x - 15
+  #   @right = @x + 15
+  # end
 
   def collide_with(platform)
-    if (platform.left <= @left and @left <= platform.right) or (platform.left <= @right and @right <= platform.right)
-      if platform.bottom >= @bottom and @bottom >= platform.top
+    if (platform.hitbox.left <= @hitbox.left and @hitbox.left <= platform.hitbox.right) or (platform.hitbox.left <= @hitbox.right and @hitbox.right <= platform.hitbox.right)
+      if platform.hitbox.bottom >= @hitbox.bottom and @hitbox.bottom >= platform.hitbox.top
         return true
       end
     end
     return false
   end
 
-  def update
-    fall
-    move
-  end
+  # def update
+  #   fall
+  #   move
+  # end
 
   def draw
     case @dir
@@ -180,7 +182,8 @@ class Player
     else
       img.draw_rot(@x, @y, ZOrder::PLAYER, degree_since_roll, 0.5, 0.5, 1, 1, opacity)
     end
-    @img_stars.draw_rot(@x, @top, ZOrder::PLAYER, 0, 0.5, 0.5, 1, 1, opacity) if is_hurt or is_dead
+    @hitbox.draw(@x, @y, ZOrder::PLAYER, 0xff_ff0000)
+    @img_stars.draw_rot(@x, @hitbox.top, ZOrder::PLAYER, 0, 0.5, 0.5, 1, 1, opacity) if is_hurt or is_dead
   end
 
   def draw_score

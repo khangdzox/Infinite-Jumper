@@ -15,8 +15,8 @@ class ReplayState < GameState
     @sfx_fall = Gosu::Sample.new('sound/fall.mp3') 
 
     menu_img, play_again_img, menu_img_pressed, play_again_img_pressed = *Gosu::Image.load_tiles("img/buttons.png", 114, 41)
-    @replay_button = Button.new(110, 330, 114, 41, play_again_img, play_again_img_pressed)
-    @menu_button = Button.new(290, 330, 114, 41, menu_img, menu_img_pressed)
+    @replay_button = Button.new(120, 330, 114, 41, play_again_img, play_again_img_pressed)
+    @menu_button = Button.new(280, 330, 114, 41, menu_img, menu_img_pressed)
 
     @next_state = nil
 
@@ -67,7 +67,7 @@ class ReplayState < GameState
     if @player != nil
       @player.fall
       @player.move_y
-      if @player.top > Window::HEIGHT
+      if @player.hitbox.top > Window::HEIGHT
         @player = nil
       end
     end

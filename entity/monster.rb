@@ -1,6 +1,7 @@
 require './modules'
 
 class Monster
+  attr_accessor 
   def initialize
     
   end
