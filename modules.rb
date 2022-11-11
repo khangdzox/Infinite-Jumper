@@ -8,5 +8,5 @@ module ZOrder
   BACKGROUND, PLATFORMS, MONSTERS, PLAYER, UI, OVERLAY = *0..5
 end
 
-Gravity = 0.4
+Gravity = 0.35
 HeightLimit = 250

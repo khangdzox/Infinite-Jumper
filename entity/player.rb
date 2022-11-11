@@ -25,18 +25,7 @@ class Player
     @time_start_hurt = nil
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
-    # @top = @y - @h/2
-    # @bottom = @y + @h/2
-    # @left = @x - 15
-    # @right = @x + 15
   end
-
-  # def play_sound(sound)
-  #   case sound
-  #   when :jump
-  #     @sfx_jump.play
-  #   end
-  # end
 
   def roll
     @roll = Gosu.milliseconds
@@ -141,15 +130,6 @@ class Player
     @hitbox.bottom = top + @h
   end
 
-  # def set_x(x)
-  #   @x = x
-
-  #   @x = @x % Window::WIDTH
-
-  #   @left = @x - 15
-  #   @right = @x + 15
-  # end
-
   def collide_with(platform)
     if (platform.hitbox.left <= @hitbox.left and @hitbox.left <= platform.hitbox.right) or (platform.hitbox.left <= @hitbox.right and @hitbox.right <= platform.hitbox.right)
       if platform.hitbox.bottom >= @hitbox.bottom and @hitbox.bottom >= platform.hitbox.top
@@ -158,11 +138,6 @@ class Player
     end
     return false
   end
-
-  # def update
-  #   fall
-  #   move
-  # end
 
   def draw
     case @dir
@@ -181,7 +156,7 @@ class Player
     else
       img.draw_rot(@x, @y, ZOrder::PLAYER, degree_since_roll, 0.5, 0.5, 1, 1, opacity)
     end
-    @hitbox.draw(@x, @y, ZOrder::PLAYER, 0xff_ff0000)
+    @hitbox.draw(@x, @y, ZOrder::PLAYER, 0xff_00ff00)
     @img_stars.draw_rot(@x, @hitbox.top, ZOrder::PLAYER, 0, 0.5, 0.5, 1, 1, opacity) if is_hurt or is_dead
   end
 
@@ -193,5 +168,6 @@ class Player
     @heart.times do |i|
       @img_heart.draw_rot(25 + i*35, 25, ZOrder::UI)
     end
+    Gosu::Image.new("img/health.png").draw_rot(130, 25, ZOrder::UI)
   end
 end

@@ -9,17 +9,37 @@ class MainWindow < Gosu::Window
     super Window::WIDTH, Window::HEIGHT
     self.caption = "Infinite Jumper"
     @state = state
-    # @star = Monster.new(200, 100, :star, Hitbox.new_xywh(100, 200, 25, 25), Gosu::Image.load_tiles("img/star.png", 25, 40))
+    # @demo = Monster.new(200, 100, :flying, Hitbox.new_xywh(200, 100, 25, 25), Gosu::Image.load_tiles("img/flying_monster.png", 80, 63))
+    @demo = FlyingDownMonster.new(200, -30)
+    @pause = false
+    @button_pressed = false
+    @time_offset = 0
+    @time_now = Gosu.milliseconds
   end
 
   def draw
-    # @star.draw
+    @demo.draw
     @state.draw
   end
 
   def update
-    # @star.animate
-    @state.update
+    if not @pause
+      @demo.animate
+      @state.update
+      @time_now = Gosu.milliseconds - @time_offset
+    end
+    if Gosu.button_down?(Gosu::KB_ESCAPE)
+      if not @button_pressed
+        @pause = !@pause
+        @button_pressed = true
+        if !@pause
+          @time_offset = Gosu.milliseconds - @time_now
+        end
+      end
+    else
+      @button_pressed = false
+    end
+    # puts @time_now/1000
   end
 
   def switch(new_state)

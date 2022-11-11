@@ -1,7 +1,10 @@
+# require "cassandra"
 require_relative "../modules"
 require_relative "../entity/button"
 require_relative "./game_state"
 require_relative "./play_state"
+
+# cluster = Cassandra.cluster()
 
 class ReplayState < GameState
   def initialize(window, score, last_x, last_dir)
