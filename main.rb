@@ -1,6 +1,7 @@
 require './state/menu_state'
 require './entity/monster'
 require './entity/hitbox'
+require './entity/collectibles'
 
 class MainWindow < Gosu::Window
   attr_accessor :state
@@ -15,14 +16,30 @@ class MainWindow < Gosu::Window
     @button_pressed = false
     @time_offset = 0
     @time_now = Gosu.milliseconds
+    # @star = Star.new(200, 100)
+    # @health_bottle = HealthBottle.new(250, 100)
+    # @propeller = Propeller.new(50, 100)
+    # @springshoe = Springshoe.new(100, 100)
+    # @spikeshoe = Spikeshoe.new(300, 100)
+    # @shield = Shield.new(200, 100)
   end
 
   def draw
     @demo.draw
+    # @star.draw
+    # @health_bottle.draw
+    # @propeller.draw
+    # @springshoe.draw
+    # @spikeshoe.draw
+    # @shield.draw
     @state.draw
   end
 
   def update
+    # @star.animate
+    # @star.animate
+    # @propeller.animate
+    # @springshoe.animate
     if not @pause
       @demo.animate
       @state.update
@@ -48,7 +65,7 @@ class MainWindow < Gosu::Window
     new_state.enter
   end
 end
-
+ 
 window = MainWindow.new
 window.switch(MenuState.new(window))
 window.show
