@@ -11,7 +11,7 @@ class MainWindow < Gosu::Window
     self.caption = "Infinite Jumper"
     @state = state
     # @demo = Monster.new(200, 100, :flying, Hitbox.new_xywh(200, 100, 25, 25), Gosu::Image.load_tiles("img/flying_monster.png", 80, 63))
-    @demo = FlyingDownMonster.new(200, -30)
+    # @demo = FlyingDownMonster.new(200, -30)
     @pause = false
     @button_pressed = false
     @time_offset = 0
@@ -25,7 +25,7 @@ class MainWindow < Gosu::Window
   end
 
   def draw
-    @demo.draw
+    # @demo.draw
     # @star.draw
     # @health_bottle.draw
     # @propeller.draw
@@ -41,7 +41,7 @@ class MainWindow < Gosu::Window
     # @propeller.animate
     # @springshoe.animate
     if not @pause
-      @demo.animate
+      # @demo.animatea
       @state.update
       @time_now = Gosu.milliseconds - @time_offset
     end

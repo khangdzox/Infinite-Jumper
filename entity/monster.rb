@@ -1,8 +1,55 @@
 require './modules'
-  ##
-  # Monster general class
+require_relative './platform'
+
+##
+# Generate a monster that scroll with platforms
+def generate_scrolling_monster(last_x, last_y)
+  x = 60 + (last_x + rand(101) - 50) %280
+  y = last_y - 50
+  case rand(4)
+  when 3
+    monster = StaticMonster.new(x + rand(31) - 15, y - 25)
+    associated_platforms = [
+      StaticPlatform.new(x-30, y+5),
+      StaticPlatform.new(x+30, y+5),
+      StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 80)
+    ]
+  when 2
+    monster = BouncingMonster.new(x + rand(21) - 10, y - 15)
+    associated_platforms = [
+      StaticPlatform.new(x-30, y+7),
+      StaticPlatform.new(x+30, y+7),
+      StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 80)
+    ]
+  when 1
+    monster = MovingMonster.new(x, y)
+    associated_platforms = [
+      StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 40)
+    ]
+  when 0
+    monster = FlyingLRMonster.new(x, y)
+    associated_platforms = [
+      StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 70)
+    ]
+  end
+  return *[monster, associated_platforms]
+end
+
+##
+# Generate a monster that floating on the screen
+def generate_floating_monster
+  case rand(2)
+  when 1
+    FlyingUpMonster.new(35 + rand(331), 640)
+  when 0
+    FlyingDownMonster.new(35 + rand(331), -17)
+  end
+end
+
+##
+# Monster general class
 class Monster
-  attr_accessor :type, :hitbox
+  attr_reader :type, :hitbox, :x
   def initialize(x, y, type, hitbox, animation, ani_duration = 100)
     @x = @base_x = x
     @y = @base_y = y
@@ -43,7 +90,7 @@ end
 # Monster that stay static on two platforms
 class StaticMonster < Monster
   def initialize(x, y)
-    super(x, y, :monster, Hitbox.new_xywh(x, y, 82, 46), Gosu::Image.load_tiles("img/static_monster.png", 82, 52))
+    super(x, y, :scrolling_monster, Hitbox.new_xywh(x, y, 82, 46), Gosu::Image.load_tiles("img/static_monster.png", 82, 52))
   end
 end
 
@@ -53,7 +100,7 @@ class BouncingMonster < Monster
   def initialize(x, y)
     @w = 91
     @h = 31
-    super(x, y, :monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/bouncing_monster.png", @w, @h))
+    super(x, y, :scrolling_monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/bouncing_monster.png", @w, @h))
     @bounce_delay = 800
     @bounce_start = Gosu.milliseconds
     @bounce_count = 0
@@ -86,7 +133,7 @@ class MovingMonster < Monster
   def initialize(x, y)
     @w = 80
     @h = 45
-    super(x, y, :monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/moving_monster.png", @w, @h))
+    super(x, y, :scrolling_monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/moving_monster.png", @w, @h))
     @start = Gosu.milliseconds
   end
 
@@ -103,7 +150,7 @@ class FlyingLRMonster < Monster
   def initialize(x, y)
     @w = 37
     @h = 49
-    super(x, y, :monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/flying_monster.png", @w, @h))
+    super(x, y, :scrolling_monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/flying_monster.png", @w, @h))
     @start = Gosu.milliseconds
     @dir = 1
     @vx = 2
@@ -135,17 +182,17 @@ class FlyingUpMonster < Monster
   def initialize(x, y)
     @w = 70
     @h = 90
-    super(x, y, :monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/flying_up_monster.png", @w, @h))
+    super(x, y, :floating_monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/flying_up_monster.png", @w, @h))
     @start = Gosu.milliseconds
   end
 
   def action
     dt = Gosu.milliseconds - @start
-    if dt < 3000
-      @y = @base_y - (1.0 - (1.0 - (dt-2000.0)/1000.0)**3.0) * 30.0
-    elsif dt > 3500 and dt < 4500
-      @y = @base_y - 30 - ((dt-3500.0)/1000.0)**3.0 * 100.0
-    elsif dt >= 4500
+    if dt < 1000
+      @y = @base_y - (1.0 - (1.0 - dt/1000.0)**3.0) * 35.0
+    elsif dt > 1400 and dt < 2400
+      @y = @base_y - 35 - ((dt-1400.0)/1000.0)**3.0 * 100.0
+    elsif dt >= 2400
       @y -= 7
     end
     @hitbox.top = @y - @h/2
@@ -159,12 +206,12 @@ class FlyingDownMonster < Monster
   def initialize(x, y)
     @w = 46
     @h = 35
-    super(x, y, :monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/virus_monster.png", @w, @h))
+    super(x, y, :floating_monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/virus_monster.png", @w, @h))
     @dir = 1
   end
 
   def action
-    @y += 2
+    @y += 3
     if @x > Window::WIDTH - @w/2 or @x < @w/2 or rand(20) == 0
       @dir = - @dir
     end
