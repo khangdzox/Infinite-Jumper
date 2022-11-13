@@ -1,7 +1,7 @@
-require_relative "../modules"
-require_relative "../entity/button"
-require_relative "./game_state"
-require_relative "./play_state"
+require "./modules"
+require "./entity/button"
+require "./state/game_state"
+require "./state/play_state"
 
 class MenuState < GameState
   def initialize(window)

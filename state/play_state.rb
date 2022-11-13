@@ -1,9 +1,9 @@
-require_relative '../modules'
-require_relative '../entity/player'
-require_relative '../entity/platform'
-require_relative '../entity/collectibles'
-require_relative './game_state'
-require_relative './replay_state'
+require "./modules"
+require "./entity/player"
+require "./entity/platform"
+require "./entity/collectibles"
+require "./state/game_state"
+require "./state/replay_state"
 
 class PlayState < GameState
   def initialize(window)

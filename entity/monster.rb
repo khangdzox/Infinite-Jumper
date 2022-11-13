@@ -1,5 +1,5 @@
-require './modules'
-require_relative './platform'
+require "./modules"
+require "./entity/platform"
 
 ##
 # Generate a monster that scroll with platforms

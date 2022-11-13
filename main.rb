@@ -1,7 +1,7 @@
-require './state/menu_state'
-require './entity/monster'
-require './entity/hitbox'
-require './entity/collectibles'
+require "./state/menu_state"
+require "./entity/monster"
+require "./entity/hitbox"
+require "./entity/collectibles"
 
 class MainWindow < Gosu::Window
   attr_accessor :state

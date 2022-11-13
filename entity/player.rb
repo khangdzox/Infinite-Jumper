@@ -1,6 +1,6 @@
-require './modules'
-require_relative './hitbox'
-require_relative './collectibles'
+require "./modules"
+require "./entity/hitbox"
+require "./entity/collectibles"
 
 class Player
   attr_accessor :score, :hitbox, :vx, :vy, :y, :x, :dir

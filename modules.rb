@@ -1,4 +1,4 @@
-require 'gosu'
+require "gosu"
 
 module Window
   WIDTH, HEIGHT = 400, 600

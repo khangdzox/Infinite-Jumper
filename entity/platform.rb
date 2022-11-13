@@ -1,4 +1,4 @@
-require './modules'
+require "./modules"
 
 def generate_random_standable_platform(last_x, limit)
   case rand(30)
