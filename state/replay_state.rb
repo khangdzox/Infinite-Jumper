@@ -60,7 +60,7 @@ class ReplayState < GameState
       @outro = true
       @next_state = MenuState.new(@window)
     end
-    if @replay_button.clicked?(@window.mouse_x, @window.mouse_y) and @outro.nil?
+    if @replay_button.clicked?(@window.mouse_x, @window.mouse_y) or Gosu.button_down?(Gosu::KB_SPACE) and @outro.nil?
       @outro = true
       @next_state = PlayState.new(@window)
     end

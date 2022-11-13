@@ -43,7 +43,7 @@ class MenuState < GameState
     end
     @player.fall
     @player.move_y
-    if @play_button.clicked?(@window.mouse_x, @window.mouse_y)
+    if @play_button.clicked?(@window.mouse_x, @window.mouse_y) or Gosu.button_down?(Gosu::KB_SPACE)
       @outro = true
     end
     if @outro == false

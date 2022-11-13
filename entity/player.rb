@@ -11,6 +11,7 @@ class Player
     @img_stars = Gosu::Image.new("img/stars.png")
     @img_heart = Gosu::Image.new("img/heart.png")
     @sfx_jump = Gosu::Sample.new("sound/jump.wav")
+    @sfx_damage = Gosu::Sample.new("sound/damage.mp3")
     @sfx_spring = Gosu::Sample.new('sound/boost.mp3')
     @x = x
     @y = y
@@ -46,6 +47,7 @@ class Player
   def damage
     @heart -= 1
     @time_start_hurt = Gosu.milliseconds
+    @sfx_damage.play
   end
 
   def insta_death

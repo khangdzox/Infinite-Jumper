@@ -174,20 +174,20 @@ class PlayState < GameState
         end
       end
 
-      if @collectible.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(10) == 0
+      if @collectible.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(50) == 0
         @collectible = generate_collectible(@highest_standable_platform.x, @highest_standable_platform.hitbox.top - 20)
         @platforms << StaticPlatform.new(30 + (@highest_standable_platform.x + rand(100*2+1) - 100) %340, @highest_standable_platform.hitbox.top - 70)
         @highest_standable_platform = @platforms.last
         puts "Collectible generated: #{@collectible}"
       end
 
-      if @monster.nil? and rand(500) == 0
-        case rand(2)
-        when 0
+      if @monster.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(50) == 0
+        case rand(5)
+        when 0..3
           @monster, associated_platforms = generate_scrolling_monster(@highest_standable_platform.x, @highest_standable_platform.hitbox.top)
           @platforms += associated_platforms
           @highest_standable_platform = @platforms.last
-        when 1
+        when 4
           @monster = generate_floating_monster()
         end
         puts "Monster generated: #{@monster}"

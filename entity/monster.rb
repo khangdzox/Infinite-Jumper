@@ -22,9 +22,10 @@ def generate_scrolling_monster(last_x, last_y)
       StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 80)
     ]
   when 1
-    monster = MovingMonster.new(x, y)
+    monster = MovingMonster.new(x, y - 25)
     associated_platforms = [
-      StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 40)
+      StaticPlatform.new(30+(x-170)%340, y+7),
+      StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 80)
     ]
   when 0
     monster = FlyingLRMonster.new(x, y)
