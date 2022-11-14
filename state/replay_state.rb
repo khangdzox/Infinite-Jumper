@@ -1,7 +1,7 @@
-require_relative "../modules"
-require_relative "../entity/button"
-require_relative "./game_state"
-require_relative "./play_state"
+require "./modules"
+require "./entity/button"
+require "./state/game_state"
+require "./state/play_state"
 
 class ReplayState < GameState
   def initialize(window, score, last_x, last_dir)
@@ -57,7 +57,7 @@ class ReplayState < GameState
       @outro = true
       @next_state = MenuState.new(@window)
     end
-    if @replay_button.clicked?(@window.mouse_x, @window.mouse_y) and @outro.nil?
+    if @replay_button.clicked?(@window.mouse_x, @window.mouse_y) or Gosu.button_down?(Gosu::KB_SPACE) and @outro.nil?
       @outro = true
       @next_state = PlayState.new(@window)
     end

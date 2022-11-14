@@ -1,6 +1,6 @@
-require './modules'
-require_relative './hitbox'
-require_relative './player'
+require "./modules"
+require "./entity/hitbox"
+# require "./entity/player"
 
 def generate_collectible(x, y)
   case rand(6)
@@ -80,6 +80,13 @@ class Springshoe < Collectible
     end 
   end 
   
+  #def collected?(x, y)
+    #if Player.x 
+    #  return true 
+    #else
+    #  return false
+    #end 
+  #end 
 end 
 
 class Spikeshoe < Collectible

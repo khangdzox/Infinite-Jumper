@@ -1,8 +1,7 @@
-require_relative "../modules"
-require_relative "../entity/button"
-require_relative "./game_state"
-require_relative "./play_state"
-require_relative "./pause_state"
+require "./modules"
+require "./entity/button"
+require "./state/game_state"
+require "./state/play_state"
 
 class MenuState < GameState
   def initialize(window)
@@ -44,7 +43,7 @@ class MenuState < GameState
     end
     @player.fall
     @player.move_y
-    if @play_button.clicked?(@window.mouse_x, @window.mouse_y)
+    if @play_button.clicked?(@window.mouse_x, @window.mouse_y) or Gosu.button_down?(Gosu::KB_SPACE)
       @outro = true
     end
     if @outro == false

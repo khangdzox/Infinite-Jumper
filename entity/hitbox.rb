@@ -1,4 +1,4 @@
-require 'gosu'
+require "gosu"
 
 class Hitbox
   attr_accessor :top, :bottom, :left, :right

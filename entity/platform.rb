@@ -1,4 +1,4 @@
-require './modules'
+require "./modules"
 
 def generate_random_standable_platform(last_x, limit)
   case rand(30)
@@ -43,10 +43,6 @@ class StaticPlatform
     @h = 15
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
-    # @top = @y - @h/2
-    # @bottom = @y + @h/2
-    # @left = @x - @w/2
-    # @right = @x + @w/2
   end
 
   def info
@@ -82,10 +78,6 @@ class SpikePlatform
     @delay_time = 200
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
-    # @top = @y - @h/2
-    # @bottom = @y + @h/2
-    # @left = @x - @w/2
-    # @right = @x + @w/2
   end
 
   def info
@@ -128,10 +120,6 @@ class BoostPlatform
     @h = 15
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
-    # @top = @y - @h/2
-    # @bottom = @y + @h/2
-    # @left = @x - @w/2
-    # @right = @x + @w/2
   end
 
   def info
@@ -169,10 +157,6 @@ class HorizontalMoveablePlatform
     @vx = 1
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
-    # @top = @y - @h/2
-    # @bottom = @y + @h/2
-    # @left = @x - @w/2
-    # @right = @x + @w/2
   end
 
   def info
@@ -215,10 +199,6 @@ class VerticalMoveablePlatform
     @t = Gosu.milliseconds
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
-    # @top = @y - @h/2
-    # @bottom = @y + @h/2
-    # @left = @x - @w/2
-    # @right = @x + @w/2
   end
 
   def info
@@ -232,7 +212,7 @@ class VerticalMoveablePlatform
   end
 
   def move_around
-    if Gosu.milliseconds - @t > 2500
+    if Gosu.milliseconds - @t >= 2500
       @dir = - @dir
       @t = Gosu.milliseconds
     end
@@ -262,10 +242,6 @@ class BreakablePlatform
     @vy = 2
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
-    # @top = @y - @h/2
-    # @bottom = @y + @h/2
-    # @left = @x - @w/2
-    # @right = @x + @w/2
   end
 
   def info

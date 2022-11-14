@@ -1,6 +1,6 @@
-require './modules'
-require_relative './hitbox'
-require_relative './collectibles'
+require "./modules"
+require "./entity/hitbox"
+require "./entity/collectibles"
 
 class Player
   attr_accessor :score, :hitbox, :vx, :vy, :y, :x, :dir
@@ -11,11 +11,12 @@ class Player
     @img_stars = Gosu::Image.new("img/stars.png")
     @img_heart = Gosu::Image.new("img/heart.png")
     @sfx_jump = Gosu::Sample.new("sound/jump.wav")
+    @sfx_damage = Gosu::Sample.new("sound/damage.mp3")
     @sfx_spring = Gosu::Sample.new('sound/boost.mp3')
     @x = x
     @y = y
     @w = 30
-    @h = 60
+    @h = 45
     @vx = @vy = @ax = 0
     @ay = Gravity
     @heart = 3
@@ -27,18 +28,7 @@ class Player
     @time_start_hurt = nil
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
-    # @top = @y - @h/2
-    # @bottom = @y + @h/2
-    # @left = @x - 15
-    # @right = @x + 15
   end
-
-  # def play_sound(sound)
-  #   case sound
-  #   when :jump
-  #     @sfx_jump.play
-  #   end
-  # end
 
   def roll
     @roll = Gosu.milliseconds
@@ -57,6 +47,7 @@ class Player
   def damage
     @heart -= 1
     @time_start_hurt = Gosu.milliseconds
+    @sfx_damage.play
   end
 
   def insta_death
@@ -70,12 +61,17 @@ class Player
 
   def is_hurt
     return false if @time_start_hurt.nil?
-    if Gosu.milliseconds - @time_start_hurt > 750
+    if Gosu.milliseconds - @time_start_hurt > 700
       @time_start_hurt = nil
       return false
     else
       return true
     end
+  end
+
+  def bounce_off(dir)
+    @vx = 3 * dir
+    jump(-5, 0)
   end
 
   def fall
@@ -93,16 +89,16 @@ class Player
 
   def move_left
     @dir = 'left'
-    if @vx > -6
-      @ax = -0.4
+    if @vx > -5
+      @ax = -0.3
       @vx += @ax
     end
   end
 
   def move_right
     @dir = 'right'
-    if @vx < 6
-      @ax = 0.4
+    if @vx < 5
+      @ax = 0.3
       @vx += @ax
     end
   end
@@ -147,15 +143,6 @@ class Player
     @hitbox.bottom = top + @h
   end
 
-  # def set_x(x)
-  #   @x = x
-
-  #   @x = @x % Window::WIDTH
-
-  #   @left = @x - 15
-  #   @right = @x + 15
-  # end
-
   def collide_with(object)
     object_width = object.hitbox.right - object.hitbox.left
     object_height = object.hitbox.bottom - object.hitbox.top
@@ -172,11 +159,6 @@ class Player
     end
     return false
   end
-
-  # def update
-  #   fall
-  #   move
-  # end
 
   def draw
     case @dir
@@ -195,17 +177,18 @@ class Player
     else
       img.draw_rot(@x, @y, ZOrder::PLAYER, degree_since_roll, 0.5, 0.5, 1, 1, opacity)
     end
-    @hitbox.draw(@x, @y, ZOrder::PLAYER, 0xff_ff0000)
-    @img_stars.draw_rot(@x, @hitbox.top, ZOrder::PLAYER, 0, 0.5, 0.5, 1, 1, opacity) if is_hurt or is_dead
+    @hitbox.draw(@x, @y, ZOrder::PLAYER, 0xff_008000)
+    @img_stars.draw_rot(@x, @y, ZOrder::PLAYER, 0, 0.5, 0.5, 1, 1, opacity) if is_hurt or is_dead
   end
 
   def draw_score
-    @font_score.draw_text(@score.to_s, 200 - @score.to_s.length*10, 10, ZOrder::UI, 1, 1, Gosu::Color::YELLOW)
+    @font_score.draw_text(s = @score.to_i.to_s, 200 - s.length*10, 10, ZOrder::UI, 1, 1, Gosu::Color::YELLOW)
   end
 
   def draw_heart
     @heart.times do |i|
       @img_heart.draw_rot(25 + i*35, 25, ZOrder::UI)
     end
+    # Gosu::Image.new("img/health.png").draw_rot(130, 25, ZOrder::UI)
   end
 end

@@ -1,4 +1,4 @@
-require 'gosu'
+require "gosu"
 
 class Button
   def initialize(x, y, w, h, img_normal, img_pressed)
