@@ -1,6 +1,7 @@
 require_relative '../modules'
 require_relative '../entity/player'
 require_relative '../entity/platform'
+require_relative '../entity/collectibles'
 require_relative './game_state'
 require_relative './replay_state'
 
@@ -13,6 +14,8 @@ class PlayState < GameState
       @platforms << StaticPlatform.new(30 + rand(341), i * 30)
     end
 
+    @collectible = nil
+    
     @player = Player.new(@platforms[0].x, 600)
     @player.jump(-13, 0)
 
@@ -41,6 +44,9 @@ class PlayState < GameState
     @platforms.each do |platform|
       platform.draw
     end
+    if not @collectible.nil?
+      @collectible.draw
+    end
   end
 
   def update
@@ -53,7 +59,7 @@ class PlayState < GameState
 
       if @player.vy > 0 and not @player.is_dead
         if platform.hitbox.bottom > HeightLimit + 60
-          if @player.collide_with(platform)
+          if @player.collide_with_platform(platform)
             case platform.type
             when :boost
               platform.active
@@ -76,6 +82,12 @@ class PlayState < GameState
             end
           end
         end
+      end
+    end
+
+    if not @collectible.nil?
+      if @player.collide_with(@collectible)
+        # do something
       end
     end
 
@@ -128,7 +140,35 @@ class PlayState < GameState
         end
       end
     end
-
+    
+    if @collectible.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(10) == 0
+      @collectible = generate_collectible(@highest_standable_platform.x, @highest_standable_platform.hitbox.top + 20)
+      #@platforms += generate_random_standable_platform(@highest_standable_platform.x, 70)
+      #@highest_standable_platform = @platforms.last
+      puts "Collectible generated: #{@collectible}"
+    end
+    # if @collectibles.last.hitbox.top > 5
+    #   if @collectibles.hitbox.top > 80
+    #     @collectibles += generate_collectibles(@collectibles.x, 70)
+    #     @collectibles = @collectibles.last
+    #   elsif @collectibles.hitbox.top > 50
+    #     if rand(100) < 50
+    #       @platforms += generate_collectibles(@collectibles.x, 120)
+    #       @collectibles = @collectibles.last
+    #     end
+    #   elsif @collectibles.hitbox.top > 30
+    #     if rand(100) < 30
+    #       @collectibles += generate_collectibles(@collectibles.x, 180)
+    #       @collectibles = @collectibles.last
+    #     end
+    #   elsif @collectibles.hitbox.top > 10
+    #     if rand(100) < 10
+    #       @collectibles += generate_collectibles(@collectibles.x, 200)
+    #       @collectibles = @collectibles.last
+    #     end
+    #   end
+    # end
+ 
     if @player.hitbox.top >= Window::HEIGHT
       @window.switch(ReplayState.new(@window, @player.score, @player.x, @player.dir))
     end

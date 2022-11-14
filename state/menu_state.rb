@@ -2,6 +2,7 @@ require_relative "../modules"
 require_relative "../entity/button"
 require_relative "./game_state"
 require_relative "./play_state"
+require_relative "./pause_state"
 
 class MenuState < GameState
   def initialize(window)

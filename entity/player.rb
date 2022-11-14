@@ -1,5 +1,6 @@
 require './modules'
 require_relative './hitbox'
+require_relative './collectibles'
 
 class Player
   attr_accessor :score, :hitbox, :vx, :vy, :y, :x, :dir
@@ -10,6 +11,7 @@ class Player
     @img_stars = Gosu::Image.new("img/stars.png")
     @img_heart = Gosu::Image.new("img/heart.png")
     @sfx_jump = Gosu::Sample.new("sound/jump.wav")
+    @sfx_spring = Gosu::Sample.new('sound/boost.mp3')
     @x = x
     @y = y
     @w = 30
@@ -83,6 +85,10 @@ class Player
   def jump(vy = -11, vol = 1)
     @vy = vy
     @sfx_jump.play(vol)
+    #if Springshoe.collected?(x, y)
+      #@vy = vy * 1.6
+      #@sfx_spring.play(vol)
+    #end 
   end
 
   def move_left
@@ -150,7 +156,15 @@ class Player
   #   @right = @x + 15
   # end
 
-  def collide_with(platform)
+  def collide_with(object)
+    object_width = object.hitbox.right - object.hitbox.left
+    object_height = object.hitbox.bottom - object.hitbox.top
+    horizontal_projection = [object.hitbox.right, object.hitbox.left, @hitbox.right, @hitbox.left]
+    vertical_projection = [object.hitbox.top, object.hitbox.bottom, @hitbox.top, @hitbox.bottom]
+    (horizontal_projection.max - horizontal_projection.min < object_width + @w) and (vertical_projection.max - vertical_projection.min < object_height + @h)
+  end
+
+  def collide_with_platform(platform)
     if (platform.hitbox.left <= @hitbox.left and @hitbox.left <= platform.hitbox.right) or (platform.hitbox.left <= @hitbox.right and @hitbox.right <= platform.hitbox.right)
       if platform.hitbox.bottom >= @hitbox.bottom and @hitbox.bottom >= platform.hitbox.top
         return true
