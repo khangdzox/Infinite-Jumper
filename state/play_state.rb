@@ -30,6 +30,8 @@ class PlayState < GameState
 
     @bgm = Gosu::Song.new('sound/Insert-Quarter.mp3')
     @bgm.volume = 0.4
+
+    puts "i> Game start"
   end
 
   def enter
@@ -131,7 +133,7 @@ class PlayState < GameState
       @player.fall
       if @player.vy < 0 and @player.hitbox.top <= HeightLimit
         @platforms.each { |platform| platform.move_y(@player.vy + @player.hitbox.top - HeightLimit)}
-        @platforms.reject! { |platform| platform.hitbox.bottom >= Window::HEIGHT+15}
+        @platforms.reject! { |platform| platform.hitbox.bottom >= Window::HEIGHT+10}
         @monster.move(@player.vy + @player.hitbox.top - HeightLimit) if not @monster.nil? and @monster.type == :scrolling_monster
         @player.set_top(HeightLimit)
         @player.move_x
@@ -178,7 +180,7 @@ class PlayState < GameState
         @collectible = generate_collectible(@highest_standable_platform.x, @highest_standable_platform.hitbox.top - 20)
         @platforms << StaticPlatform.new(30 + (@highest_standable_platform.x + rand(100*2+1) - 100) %340, @highest_standable_platform.hitbox.top - 70)
         @highest_standable_platform = @platforms.last
-        puts "Collectible generated: #{@collectible}"
+        puts "i> Collectible generated: #{@collectible}"
       end
 
       if @monster.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(50) == 0
@@ -190,10 +192,11 @@ class PlayState < GameState
         when 4
           @monster = generate_floating_monster()
         end
-        puts "Monster generated: #{@monster}"
+        puts "i> Monster generated: #{@monster}"
       end
 
       if @player.hitbox.top >= Window::HEIGHT
+        puts "i> Game ended"
         @window.switch(ReplayState.new(@window, @player.score.to_i, @player.x, @player.dir))
       end
     end

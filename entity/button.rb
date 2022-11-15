@@ -9,6 +9,8 @@ class Button
     @normal = img_normal
     @pressed = img_pressed
     @img = @normal
+    @clicked = false
+    @availability = true
   end
 
   def mouse_in?(mouse_x, mouse_y)
@@ -22,14 +24,33 @@ class Button
   end
 
   def clicked?(mouse_x, mouse_y)
-    if mouse_in?(mouse_x, mouse_y) and Gosu.button_down?(Gosu::MS_LEFT)
-      return true
+    if @availability and mouse_in?(mouse_x, mouse_y) and Gosu.button_down?(Gosu::MS_LEFT)
+      if not @clicked
+        @clicked = true
+        return true
+      else
+        return false
+      end
     else
+      @clicked = false
       return false
     end
   end
 
+  def set_xy(x, y)
+    @x = x
+    @y = y
+  end
+
+  def hide
+    @availability = false
+  end
+
+  def show
+    @availability = true
+  end
+
   def draw
-    @img.draw_rot(@x, @y, ZOrder::UI)
+    @img.draw_rot(@x, @y, ZOrder::UI) if @availability
   end
 end
