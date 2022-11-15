@@ -81,6 +81,10 @@ class Player
   def jump(vy = -11, vol = 1)
     @vy = vy
     @sfx_jump.play(vol)
+    #if Springshoe.collected?(x, y)
+      #@vy = vy * 1.6
+      #@sfx_spring.play(vol)
+    #end 
   end
 
   def move_left

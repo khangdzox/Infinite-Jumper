@@ -14,6 +14,8 @@ class PlayState < GameState
       @platforms << StaticPlatform.new(30 + rand(341), i * 30)
     end
 
+    @collectible = nil
+    
     @player = Player.new(@platforms[0].x, 600)
     @player.jump(-13, 0)
 
