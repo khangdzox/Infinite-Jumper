@@ -11,13 +11,13 @@ def generate_collectible(last_x, last_y)
   when 0
     collectible = Star.new(x, y - 25)
     associated_platforms = [
-      StaticPlatform.new(x, y+5),
+      StaticPlatform.new(x, y),
       StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 80)
     ]
   when 1
     collectible = HealthBottle.new(x, y - 25)
     associated_platforms = [
-      StaticPlatform.new(x, y+5),
+      StaticPlatform.new(x, y),
       StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 80)
     ]
   when 2
@@ -92,7 +92,7 @@ end
 class Star < Collectible
   attr_accessor :type, :hitbox
   def initialize(x, y)
-    super(x, y, :star, Hitbox.new_xywh(100, 200, 25, 40), Gosu::Image.load_tiles("img/star.png", 25, 40))
+    super(x, y, :star, Hitbox.new_xywh(x, y, 25, 40), Gosu::Image.load_tiles("img/star.png", 25, 40))
   end 
 
   def action
@@ -105,7 +105,7 @@ end
 class HealthBottle < Collectible
   attr_accessor :type, :hitbox
   def initialize(x, y)
-    super(x, y, :health_bottle, Hitbox.new_xywh(100, 200, 20, 28), Gosu::Image.load_tiles("img/health_bottle.png", 20, 28))
+    super(x, y, :health_bottle, Hitbox.new_xywh(x, y, 20, 28), Gosu::Image.load_tiles("img/health_bottle.png", 20, 28))
   end 
 
   def action
@@ -118,7 +118,7 @@ end
 class Propeller < Collectible
   attr_accessor :type, :hitbox
   def initialize(x, y)
-    super(x, y, :propeller, Hitbox.new_xywh(100, 200, 32, 32), Gosu::Image.load_tiles("img/propeller.png", 32, 32)[1..3])  
+    super(x, y, :propeller, Hitbox.new_xywh(x, y, 32, 32), Gosu::Image.load_tiles("img/propeller.png", 32, 32)[1..3])  
     @fly_start = Gosu.milliseconds
     @vy = 0
   end
