@@ -10,7 +10,7 @@ class ReplayState < GameState
     @score = score
     @player = Player.new(last_x, -60)
     @player.dir = last_dir
-    @background_color = 0xFF_82C4FF
+    @background = Gosu::Image.new("img/background.png")
     @font = Gosu::Font.new(35, bold: true, name: "img/DoodleJump.ttf")
     @game_over = Gosu::Image.new("img/game_over_title.png")
     @sfx_fall = Gosu::Sample.new('sound/fall.mp3') 
@@ -36,8 +36,8 @@ class ReplayState < GameState
       @highscore = @score
       new_json = JSON.generate({"id": info["id"], "name": info["name"], "score": @score})
       File.write("info", new_json)
-      future = $session.execute_async("UPDATE scores SET score = #{@score} WHERE id = #{info["id"]}")
-      puts ("c> UPDATE scores SET score = #{@score} WHERE id = #{info["id"]}")
+      future = $session.execute_async("UPDATE scores SET score = #{@score}, time = toTimestamp(now()) WHERE id = #{info["id"]}")
+      puts ("c> UPDATE scores SET score = #{@score}, time = toTimestamp(now()) WHERE id = #{info["id"]}")
       future.on_success do
         puts ("i> Success!")
       end
@@ -53,7 +53,7 @@ class ReplayState < GameState
 
   def draw
     outro if @outro
-    Gosu.draw_rect(0, 0, Window::WIDTH, Window::HEIGHT, @background_color)
+    @background.draw(0, 0, ZOrder::BACKGROUND)
     @game_over.draw(80, 112, ZOrder::UI)
     @font.draw_text("your score: #{@score}", 90, 210, ZOrder::UI, 1, 1, Gosu::Color::BLACK)
     @font.draw_text("your high score: #{@highscore}", 42, 240, ZOrder::UI, 1, 1, Gosu::Color::BLACK)

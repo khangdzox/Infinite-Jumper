@@ -28,7 +28,7 @@ class PlayState < GameState
     # @pause = false
     # @button_pressed = false
 
-    @background_color = 0xFF_82C4FF
+    @background = Gosu::Image.new("img/background.png")
 
     @bgm = Gosu::Song.new('sound/Insert-Quarter.mp3')
     @bgm.volume = 0.4
@@ -46,7 +46,7 @@ class PlayState < GameState
 
   def draw
     intro if @intro
-    Gosu.draw_rect(0, 0, Window::WIDTH, Window::HEIGHT, @background_color)
+    @background.draw(0, 0)
     @player.draw
     @player.draw_score
     @player.draw_heart
