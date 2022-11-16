@@ -1,5 +1,6 @@
 require "./modules"
 require "./entity/platform"
+require "./entity/animation"
 
 ##
 # Generate a monster that scroll with platforms
@@ -56,10 +57,7 @@ class Monster
     @y = @base_y = y
     @type = type
     @hitbox = hitbox
-    @animation = animation
-    @ani_index = 0
-    @ani_time = Gosu.milliseconds
-    @ani_duration = ani_duration
+    @animation = Animation.new(animation, ani_duration)
   end
 
   def move(y)
@@ -73,16 +71,12 @@ class Monster
   end
 
   def animate
-    if Gosu.milliseconds - @ani_time >= @ani_duration
-      @ani_index += 1
-      @ani_index %= @animation.length
-      @ani_time = Gosu.milliseconds
-    end
+    @animation.animate
     action
   end
 
   def draw
-    @animation[@ani_index].draw_rot(@x, @y, ZOrder::MONSTERS)
+    @animation.draw(@x, @y, ZOrder::MONSTERS)
     @hitbox.draw(@x, @y, ZOrder::MONSTERS, 0xff_ff0000)
   end
 end
@@ -171,7 +165,7 @@ class FlyingLRMonster < Monster
   end
 
   def draw
-    @animation[@ani_index].draw_rot(@x, @y, ZOrder::MONSTERS, 0, 0.5, 0.5, @dir)
+    @animation.draw(@x, @y, ZOrder::MONSTERS, @dir)
     @hitbox.draw(@x, @y, ZOrder::MONSTERS, 0xff_ff0000)
   end
 end
