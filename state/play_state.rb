@@ -1,6 +1,7 @@
 require "./modules"
 require "./entity/player"
 require "./entity/platform"
+require "./entity/monster"
 require "./entity/collectibles"
 require "./state/game_state"
 require "./state/replay_state"
@@ -102,16 +103,39 @@ class PlayState < GameState
       end
 
       if not @collectible.nil?
-        if @player.collide_with(@collectible)
-          # do something
+        @collectible.animate
+        if @collectible.hitbox.top > Window::HEIGHT
+          @collectible = nil
+        elsif @player.collide_with(@collectible)
+          case @collectible.type
+          when :star
+            puts ("i> Collect star")
+            @player.score += 50
+          when :health_bottle
+            puts ("i> Collect health bottle")
+            @player.heart += 1 if @player.heart < 3
+          when :propeller
+            @player.state = :propeller
+          when :springshoe
+            @player.state = :spring
+          when :spikeshoe
+            @player.state = :spike
+          when :shield
+            @player.state = :shield
+          end
+          @collectible = nil
         end
       end
 
       if not @monster.nil?
         @monster.animate
         if not @player.is_dead and not @player.is_hurt and @player.collide_with(@monster) # and @player.powerup.type != :propeller
-          @player.damage
-          @player.bounce_off(@player.x > @monster.x ? 1 : -1)
+          if @player.state == :normal or @player.state == :spring
+            @player.damage
+            @player.bounce_off(@player.x > @monster.x ? 1 : -1)
+          elsif @player.hitbox.bottom >= @monster.hitbox.top and @player.state == :spike
+            # Kill the monster
+          end
         end
         if @monster.hitbox.top > Window::HEIGHT+50 or (@monster.type == :floating_monster ? @monster.hitbox.bottom < -50 : false)
           @monster = nil
@@ -137,6 +161,7 @@ class PlayState < GameState
         @platforms.each { |platform| platform.move_y(@player.vy + @player.hitbox.top - HeightLimit)}
         @platforms.reject! { |platform| platform.hitbox.bottom >= Window::HEIGHT+10}
         @monster.move(@player.vy + @player.hitbox.top - HeightLimit) if not @monster.nil? and @monster.type == :scrolling_monster
+        @collectible.move(@player.vy + @player.hitbox.top - HeightLimit) if not @collectible.nil?
         @player.set_top(HeightLimit)
         @player.move_x
         @player.score -= (@player.vy + @player.hitbox.top - HeightLimit)/10
@@ -179,8 +204,8 @@ class PlayState < GameState
       end
 
       if @collectible.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(50) == 0
-        @collectible = generate_collectible(@highest_standable_platform.x, @highest_standable_platform.hitbox.top - 20)
-        @platforms << StaticPlatform.new(30 + (@highest_standable_platform.x + rand(100*2+1) - 100) %340, @highest_standable_platform.hitbox.top - 70)
+        @collectible, associated_platforms = generate_collectible(@highest_standable_platform.x, @highest_standable_platform.hitbox.top)
+        @platforms += associated_platforms
         @highest_standable_platform = @platforms.last
         puts "i> Collectible generated: #{@collectible}"
       end

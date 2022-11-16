@@ -3,7 +3,7 @@ require "./entity/hitbox"
 require "./entity/collectibles"
 
 class Player
-  attr_accessor :score, :hitbox, :vx, :vy, :y, :x, :dir
+  attr_accessor :score, :heart, :hitbox, :vx, :vy, :y, :x, :dir, :state
 
   def initialize(x, y)
     @img_left = Gosu::Image.new("img/lik-left.png")
@@ -26,6 +26,7 @@ class Player
     @roll = nil
     @dead = false
     @time_start_hurt = nil
+    @state = :normal # Valid states: :normal, :propeller, :spring, :spike, :shield, :boost
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
   end
@@ -81,10 +82,6 @@ class Player
   def jump(vy = -11, vol = 1)
     @vy = vy
     @sfx_jump.play(vol)
-    #if Springshoe.collected?(x, y)
-      #@vy = vy * 1.6
-      #@sfx_spring.play(vol)
-    #end 
   end
 
   def move_left
