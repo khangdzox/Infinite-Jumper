@@ -7,7 +7,7 @@ class LeaderboardState < GameState
     @background = Gosu::Image.new("img/achievement_background.png")
     @line_splitter = Gosu::Image.new("img/achievement_background_line_splitter.png")
     @splitter = Gosu::Image.new("img/achievement_background_splitter.png")
-    @gold_medal, @silver_medal, @copper_medal = *Gosu::Image.load_tiles("img/medal.png", 38, 33)
+    @gold_medal, @silver_medal, @copper_medal = *Gosu::Image.load_tiles("img/medal.png", 44, 33)
     @loading_animation = Animation.new(Gosu::Image.load_tiles("img/loading.png", 30, 30), 50)
     @loading_title = Gosu::Image.from_markup("<b><c=ffffff>loading...</c></b>", 50, font: "img/DoodleJump.ttf")
     today_img, thisweek_img, alltime_img, today_img_hover, thisweek_img_hover, alltime_img_hover, today_img_active, thisweek_img_active, alltime_img_active = *Gosu::Image.load_tiles("img/achievement_panel.png", 96, 30)
