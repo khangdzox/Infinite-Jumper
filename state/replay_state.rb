@@ -1,4 +1,3 @@
-require "json"
 require "./modules"
 require "./entity/button"
 require "./state/game_state"
@@ -15,9 +14,9 @@ class ReplayState < GameState
     @game_over = Gosu::Image.new("img/game_over_title.png")
     @sfx_fall = Gosu::Sample.new('sound/fall.mp3') 
 
-    info = JSON.load_file("info")
-
-    @name = info["name"]
+    @uuid = File.open("info", "r") { |f| f.read}
+    result = $session.execute("SELECT name FROM names WHERE id = #{@uuid}")
+    result.each { |r| @name = r["name"] }
     @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
 
     menu_img, play_again_img, menu_img_pressed, play_again_img_pressed = *Gosu::Image.load_tiles("img/buttons.png", 114, 41)
@@ -30,18 +29,20 @@ class ReplayState < GameState
 
     @edit_state = false
 
-    @highscore = info["score"]
-    if @highscore < @score
-      puts ("i> Update highscore...")
+    result = $session.execute("SELECT score FROM scores WHERE id = #{@uuid}")
+    if not result.empty?
+      scores = []
+      result.each { |r| scores << r["score"] }
+      @highscore = scores.max
+      @highscore = @score if @highscore < @score
+    else
       @highscore = @score
-      new_json = JSON.generate({"id": info["id"], "name": info["name"], "score": @score})
-      File.write("info", new_json)
-      future = $session.execute_async("UPDATE scores SET score = #{@score}, time = toTimestamp(now()) WHERE id = #{info["id"]}")
-      puts ("c> UPDATE scores SET score = #{@score}, time = toTimestamp(now()) WHERE id = #{info["id"]}")
-      future.on_success do
-        puts ("i> Success!")
-      end
     end
+
+    puts ("i> Insert new score...")
+    puts ("c> INSERT INTO scores (id, time, score) VALUES (#{@uuid}, totimestamp(now()), #{@score})")
+    future = $session.execute_async("INSERT INTO scores (id, time, score) VALUES (#{@uuid}, totimestamp(now()), #{@score})")
+    future.on_success { puts ("i> Success!") }
   end
 
   def enter
@@ -79,10 +80,10 @@ class ReplayState < GameState
       @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
       if Gosu.button_down?(Gosu::KB_RETURN) or Gosu.button_down?(Gosu::KB_ESCAPE) or Gosu.button_down?(Gosu::KB_ENTER) or (Gosu.button_down?(Gosu::MS_LEFT) and not @edit_button.mouse_in?(@window.mouse_x, @window.mouse_y))
         @edit_state = false
-        info = JSON.load_file("info")
         if @window.text_input.text == ""
           puts "e> Empty name! Revert to old name..."
-          @name = info["name"]
+          result = $session.execute("SELECT name FROM names WHERE id = #{@uuid}")
+          result.each { |r| @name = r["name"] }
           @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
         else
           if @window.text_input.text.length > 12
@@ -91,9 +92,8 @@ class ReplayState < GameState
             @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
           end
           puts ("i> Update name...")
-          File.write("info", JSON.generate({"id": info["id"], "name": @name, "score": info["score"]}))
-          future = $session.execute_async("UPDATE scores SET name = '#{@name}' WHERE id = #{info["id"]}")
-          puts ("c> UPDATE scores SET name = '#{@name}' WHERE id = #{info["id"]}")
+          puts ("c> UPDATE names SET name = '#{@name}' WHERE id = #{@uuid}")
+          future = $session.execute_async("UPDATE names SET name = '#{@name}' WHERE id = #{@uuid}")
           future.on_success { puts ("i> Success!") }
         end
         @window.text_input = nil

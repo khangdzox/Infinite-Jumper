@@ -22,50 +22,27 @@ puts "i> Finding information file..."
 if not File.exist?("info")
   puts "e> Information file doesn't exist. Create new file..."
   uuid = Cassandra::Uuid::Generator.new.uuid
-  info = {"id"=>uuid, "name"=>"player", "score"=>0}
-  File.write("info", JSON.generate(info))
-  future = $session.execute_async("INSERT INTO scores (id, name, score) VALUES (#{info["id"]}, 'player', 0)")
-  puts ("c> INSERT INTO scores (id, name, score) VALUES (#{info["id"]}, 'player', 0)")
-  future.on_success do
-    puts ("i> Success!")
-  end
-  future.on_failure do |e|
-    puts ("e> #{e}")
-  end
+  File.write("info", uuid)
+  puts ("c> INSERT INTO names (id, names) VALUES (#{uuid}, 'player')")
+  future = $session.execute_async("INSERT INTO names (id, names) VALUES (#{uuid}, 'player')")
+  future.on_success { puts ("i> Success!") }
+  future.on_failure { |e| puts ("e> #{e}") }
 else
   puts "i> Information file found! Verifying information..."
-  info = JSON.load_file("info")
-  future = $session.execute_async("SELECT * FROM scores WHERE id = #{info["id"]}")
+  uuid = File.open("info", "r") { |f| f.read}
+  future = $session.execute_async("SELECT id FROM names WHERE id = #{uuid}")
   future.on_success do |rows|
     if not rows.empty?
-      puts "i> ID found in database!"
-      rows.each do |row|
-        if not (row["name"] == info["name"] and row["score"] == info["score"])
-          puts "e> Name and Score is invalid! Update information..."
-          future = $session.execute_async("UPDATE scores SET name = '#{info["name"]}', score = #{info["score"]} WHERE id = #{info["id"]}")
-          puts ("c> UPDATE scores SET name = '#{info["name"]}', score = #{info["score"]} WHERE id = #{info["id"]}")
-          future.on_success do
-            puts ("i> Success!")
-          end
-          future.on_failure do |e|
-            puts ("e> #{e}")
-          end
-        else
-          puts "i> Name and Score verified!"
-        end
-      end
+      puts "i> ID verified!"
     else
-      puts "e> ID not found! Update information..."
-      future = $session.execute_async("INSERT INTO scores (id, name, score) VALUES (#{info["id"]}, '#{info["name"]}', #{info["score"]})")
-      puts ("c> INSERT INTO scores (id, name, score) VALUES (#{info["id"]}, '#{info["name"]}', #{info["score"]})")
-      future.on_success do
-        puts ("i> Success!")
-      end
-      future.on_failure do |e|
-        puts ("e> #{e}")
-      end
+      puts "e> ID is invalid! Update information..."
+      puts ("c> INSERT INTO names (id, names) VALUES (#{uuid}, 'player')")
+      future = $session.execute_async("INSERT INTO names (id, names) VALUES (#{uuid}, 'player')")
+      future.on_success { puts ("i> Success!") }
+      future.on_failure { |e| puts ("e> #{e}") }
     end
   end
+  future.on_failure { |e| puts ("e> #{e}") }
 end
 
 class MainWindow < Gosu::Window
@@ -75,8 +52,6 @@ class MainWindow < Gosu::Window
     super Window::WIDTH, Window::HEIGHT
     self.caption = "Infinite Jumper"
     @state = state
-    # @demo = Monster.new(200, 100, :flying, Hitbox.new_xywh(200, 100, 25, 25), Gosu::Image.load_tiles("img/flying_monster.png", 80, 63))
-    # @demo = FlyingDownMonster.new(200, -30)
     @pause = false
     @button_pressed = false
     @time_offset = 0

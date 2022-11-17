@@ -48,7 +48,7 @@ class LeaderboardState < GameState
         @loading_animation.draw(115, 320, ZOrder::UI)
         @loading_title.draw(150, 300, ZOrder::UI)
       else
-        (@table.length >= 5 ? 5 : @table.length).times do |i|
+        (@scores.length >= 5 ? 5 : @scores.length).times do |i|
           case i
           when 0
             index_img = @gold_medal
@@ -59,8 +59,8 @@ class LeaderboardState < GameState
           else
             index_img = Gosu::Image.from_markup("<c=E1DCC6>#{i+1}</c>", 28, font: "Arial Black")
           end
-          name = Gosu::Image.from_text(@table[i]["name"], 30, bold: true, font: "img/DoodleJump.ttf")
-          score = Gosu::Image.from_text(@table[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
+          name = Gosu::Image.from_text(@names[i], 30, bold: true, font: "img/DoodleJump.ttf")
+          score = Gosu::Image.from_text(@scores[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
           index_img.draw_rot(66, 153 + i * 45, ZOrder::UI)
           name.draw_rot(115, 153 + i * 45, ZOrder::UI, 0, 0)
           score.draw_rot(350, 153 + i * 45, ZOrder::UI, 0, 1)
@@ -68,30 +68,30 @@ class LeaderboardState < GameState
         @line_splitter.draw(0, 0, ZOrder::BACKGROUND)
         if @show_3dot
           @splitter.draw(0, 0)
-          if @player_index == @table.length-1
+          if @player_index == @scores.length-1
             (@player_index - 2).upto(@player_index) do |i|
               index_img = Gosu::Image.from_markup("<c=E1DCC6>#{i+1}</c>", 28, font: "Arial Black")
-              name = Gosu::Image.from_text(@table[i]["name"], 30, bold: true, font: "img/DoodleJump.ttf")
-              score = Gosu::Image.from_text(@table[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
+              name = Gosu::Image.from_text(@names[i], 30, bold: true, font: "img/DoodleJump.ttf")
+              score = Gosu::Image.from_text(@scores[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
               index_img.draw_rot(66, 153 + (i - @player_index + 8) * 45, ZOrder::UI)
               name.draw_rot(115, 153 + (i - @player_index + 8) * 45, ZOrder::UI, 0, 0)
               score.draw_rot(350, 153 + (i - @player_index + 8) * 45, ZOrder::UI, 0, 1)
             end
           else
             (@player_index - 1).upto(@player_index + 1) do |i|
-              index_img = Gosu::Image.from_text.from_markup("<c=E1DCC6>#{i+1}</c>", 28, font: "Arial Black")
-              name = Gosu::Image.from_text(@table[i]["name"], 30, bold: true, font: "img/DoodleJump.ttf")
-              score = Gosu::Image.from_text(@table[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
+              index_img = Gosu::Image.from_markup("<c=E1DCC6>#{i+1}</c>", 28, font: "Arial Black")
+              name = Gosu::Image.from_text(@names[i], 30, bold: true, font: "img/DoodleJump.ttf")
+              score = Gosu::Image.from_text(@scores[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
               index_img.draw_rot(66, 153 + (i - @player_index + 7) * 45, ZOrder::UI)
               name.draw_rot(115, 153 + (i - @player_index + 7) * 45, ZOrder::UI, 0, 0)
               score.draw_rot(350, 153 + (i - @player_index + 7) * 45, ZOrder::UI, 0, 1)
             end
           end
         else
-          5.upto(@table.length >= 9 ? 8 : @table.length-1) do |i|
+          5.upto(@scores.length >= 9 ? 8 : @scores.length-1) do |i|
             index_img = Gosu::Image.from_markup("<c=E1DCC6>#{i+1}</c>", 28, font: "Arial Black")
-            name = Gosu::Image.from_text(@table[i]["name"], 30, bold: true, font: "img/DoodleJump.ttf")
-            score = Gosu::Image.from_text(@table[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
+            name = Gosu::Image.from_text(@names[i], 30, bold: true, font: "img/DoodleJump.ttf")
+            score = Gosu::Image.from_text(@scores[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
             index_img.draw_rot(66, 153 + i*45, ZOrder::UI)
             name.draw_rot(115, 153 + i*45, ZOrder::UI, 0, 0)
             score.draw_rot(350, 153 + i*45, ZOrder::UI, 0, 1)
@@ -110,35 +110,70 @@ class LeaderboardState < GameState
       @window.switch(MenuState.new(@window))
     end
     if @loading and not @query_executed
-      puts "i> Query leaderboard information..."
+      puts "i> Query leaderboard scores..."
       case @state
       when :today
-        @future = $session.execute_async("SELECT * FROM scores WHERE time > '#{(Time.now - 86400).strftime('%Y-%m-%d')}' ALLOW FILTERING")
+        future = $session.execute_async("SELECT * FROM scores WHERE time > '#{(Time.now - 86400).strftime('%Y-%m-%d')}' ALLOW FILTERING")
       when :thisweek
-        @future = $session.execute_async("SELECT * FROM scores WHERE time > '#{(Time.now - 604800).strftime('%Y-%m-%d')}' ALLOW FILTERING")
+        future = $session.execute_async("SELECT * FROM scores WHERE time > '#{(Time.now - 604800).strftime('%Y-%m-%d')}' ALLOW FILTERING")
       when :alltime
-        @future = $session.execute_async("SELECT * FROM scores")
+        future = $session.execute_async("SELECT * FROM scores")
       end
       @query_executed = true
-      @future.on_success do |result|
+      future.on_success do |result|
         puts "i> Success!"
-        @table = []
-        result.each do |row|
-          @table << row
+        puts "i> Sorting scores..."
+        @scores = []
+        result.each { |row| @scores << row }
+        i = 0
+        while i < @scores.length - 1
+          if @scores[i]["id"] == @scores[i + 1]["id"]
+            if @scores[i]["score"] >= @scores[i + 1]["score"]
+              @scores.delete_at(i + 1)
+            else
+              @scores.delete_at(i)
+            end
+          else
+            i += 1
+          end
         end
-        @table.sort_by! { |row| [-row["score"], row["time"]] }
-        @loading = false
-        @query_executed = false
-        @query_success = true
+        @scores.sort_by! { |row| [-row["score"], row["time"]] }
+        puts "i> Done!"
+        puts "i> Scores' count: " + @scores.length.to_s
+        puts "i> Query leaderboard names..."
+        @names = []
+        name_array = []
+        result = $session.execute("SELECT * FROM names WHERE id IN (#{@scores.map{ |r| r["id"] }.join(", ")})")
+        result.each { |row| name_array << [row["id"], row["name"]] }
+        name_hash = name_array.to_h
+        @scores.each do |row|
+          @names << name_hash[row["id"]]
+        end
+        # @scores.each do |row|
+        #   puts "c> SELECT name FROM names WHERE id = #{row["id"]}"
+        #   result = $session.execute("SELECT name FROM names WHERE id = #{row["id"]}")
+        #   result.each { |row| @names << row["name"] }
+        # end
+        puts "i> Done!"
+        puts "i> Names' count: " + @names.length.to_s
+        if @scores.length == @names.length
+          puts "i> Success!"
+          @loading = false
+          @query_executed = false
+          @query_success = true
+        else
+          puts "e> An error has occurred!"
+          @query_executed = false
+        end
       end
-      @future.on_failure do |e|
+      future.on_failure do |e|
         puts "e> #{e}"
         @query_executed = false
       end
     end
     if @query_success
-      @player_index = @table.find_index { |row| row["id"].to_s == JSON.load_file("info")["id"] }
-      if @player_index < 8
+      @player_index = @scores.find_index { |row| row["id"].to_s == File.open("info", "r") { |f| f.read } }
+      if @player_index.nil? or (not @player_index.nil? and @player_index < 8)
         @show_3dot = false
       else
         @show_3dot = true
