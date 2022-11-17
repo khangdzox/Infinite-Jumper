@@ -75,17 +75,26 @@ class ReplayState < GameState
       @edit_button.hide
     end
     if @edit_state
-      @name = @window.text_input.text = @window.text_input.text.gsub(/[^a-zA-Z0-9]/, '')
+      @name = @window.text_input.text.gsub(/[^a-zA-Z0-9]/, '')
       @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
       if Gosu.button_down?(Gosu::KB_RETURN) or Gosu.button_down?(Gosu::KB_ESCAPE) or Gosu.button_down?(Gosu::KB_ENTER) or (Gosu.button_down?(Gosu::MS_LEFT) and not @edit_button.mouse_in?(@window.mouse_x, @window.mouse_y))
         @edit_state = false
-        puts ("i> Update name...")
         info = JSON.load_file("info")
-        File.write("info", JSON.generate({"id": info["id"], "name": @name, "score": info["score"]}))
-        future = $session.execute_async("UPDATE scores SET name = '#{@name}' WHERE id = #{info["id"]}")
-        puts ("c> UPDATE scores SET name = '#{@name}' WHERE id = #{info["id"]}")
-        future.on_success do
-          puts ("i> Success!")
+        if @window.text_input.text == ""
+          puts "e> Empty name! Revert to old name..."
+          @name = info["name"]
+          @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
+        else
+          if @window.text_input.text.length > 12
+            puts "e> Too long name! Limit name length to 12 characters..."
+            @name = @name[0..11]
+            @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
+          end
+          puts ("i> Update name...")
+          File.write("info", JSON.generate({"id": info["id"], "name": @name, "score": info["score"]}))
+          future = $session.execute_async("UPDATE scores SET name = '#{@name}' WHERE id = #{info["id"]}")
+          puts ("c> UPDATE scores SET name = '#{@name}' WHERE id = #{info["id"]}")
+          future.on_success { puts ("i> Success!") }
         end
         @window.text_input = nil
         @edit_button.set_xy(235 + @name_text.width, 270 + @name_text.height/2)
