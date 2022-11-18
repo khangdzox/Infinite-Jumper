@@ -99,16 +99,27 @@ end
 
 class Star < Collectible
   def initialize(x, y)
-    super(x, y, :star, Hitbox.new_xywh(x, y, 25, 40), 0, Gosu::Image.load_tiles("img/star.png", 25, 40), [])
+    @sfx_star = Gosu::Sample.new('sound/star.mp3')
+    super(
+      x,
+      y,
+      :star,
+      Hitbox.new_xywh(x, y, 25, 40),
+      0,
+      Gosu::Image.load_tiles("img/star.png", 25, 40),
+      []
+    )
   end 
 
   def custom_activate(player)
     player.score += 100
+    @sfx_star.play
   end
 end 
 
 class HealthBottle < Collectible
   def initialize(x, y)
+    @sfx_health = Gosu::Sample.new('sound/health_regained.mp3')
     super(
       x,
       y,
@@ -122,6 +133,7 @@ class HealthBottle < Collectible
 
   def custom_activate(player)
     player.heart += 1 if player.heart < 3
+    @sfx_health.play
   end 
 end 
 
