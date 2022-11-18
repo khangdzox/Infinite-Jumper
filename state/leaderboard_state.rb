@@ -23,8 +23,8 @@ class LeaderboardState < GameState
     @query_executed = false
     @query_success = false
 
-    @show_3dot = false
-    @player_index = -1
+    @player_index = nil
+    @rank_offset = 0
   end
 
   def enter
@@ -48,7 +48,33 @@ class LeaderboardState < GameState
         @loading_animation.draw(115, 320, ZOrder::UI)
         @loading_title.draw(150, 300, ZOrder::UI)
       else
-        (@scores.length >= 5 ? 5 : @scores.length).times do |i|
+        @line_splitter.draw(0, 0, ZOrder::BACKGROUND)
+        if @scores.length >= 5
+          maxfirstfive = 5
+          if @rank_offset != 0
+            @splitter.draw(0, 0)
+            5.upto(7) do |i|
+              index_img = Gosu::Image.from_markup("<c=E1DCC6>#{i + @rank_offset + 1}</c>", 28, font: "Arial Black")
+              name = Gosu::Image.from_text(@names[i], 30, bold: true, font: "img/DoodleJump.ttf")
+              score = Gosu::Image.from_text(@scores[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
+              index_img.draw_rot(66, 198 + i*45, ZOrder::UI)
+              name.draw_rot(115, 198 + i*45, ZOrder::UI, 0, 0)
+              score.draw_rot(350, 198 + i*45, ZOrder::UI, 0, 1)
+            end
+          else
+            5.upto(@scores.length - 1) do |i|
+              index_img = Gosu::Image.from_markup("<c=E1DCC6>#{i + 1}</c>", 28, font: "Arial Black")
+              name = Gosu::Image.from_text(@names[i], 30, bold: true, font: "img/DoodleJump.ttf")
+              score = Gosu::Image.from_text(@scores[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
+              index_img.draw_rot(66, 153 + i*45, ZOrder::UI)
+              name.draw_rot(115, 153 + i*45, ZOrder::UI, 0, 0)
+              score.draw_rot(350, 153 + i*45, ZOrder::UI, 0, 1)
+            end
+          end
+        else
+          maxfirstfive = @scores.length
+        end
+        maxfirstfive.times do |i|
           case i
           when 0
             index_img = @gold_medal
@@ -64,38 +90,6 @@ class LeaderboardState < GameState
           index_img.draw_rot(66, 153 + i * 45, ZOrder::UI)
           name.draw_rot(115, 153 + i * 45, ZOrder::UI, 0, 0)
           score.draw_rot(350, 153 + i * 45, ZOrder::UI, 0, 1)
-        end
-        @line_splitter.draw(0, 0, ZOrder::BACKGROUND)
-        if @show_3dot
-          @splitter.draw(0, 0)
-          if @player_index == @scores.length-1
-            (@player_index - 2).upto(@player_index) do |i|
-              index_img = Gosu::Image.from_markup("<c=E1DCC6>#{i+1}</c>", 28, font: "Arial Black")
-              name = Gosu::Image.from_text(@names[i], 30, bold: true, font: "img/DoodleJump.ttf")
-              score = Gosu::Image.from_text(@scores[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
-              index_img.draw_rot(66, 153 + (i - @player_index + 8) * 45, ZOrder::UI)
-              name.draw_rot(115, 153 + (i - @player_index + 8) * 45, ZOrder::UI, 0, 0)
-              score.draw_rot(350, 153 + (i - @player_index + 8) * 45, ZOrder::UI, 0, 1)
-            end
-          else
-            (@player_index - 1).upto(@player_index + 1) do |i|
-              index_img = Gosu::Image.from_markup("<c=E1DCC6>#{i+1}</c>", 28, font: "Arial Black")
-              name = Gosu::Image.from_text(@names[i], 30, bold: true, font: "img/DoodleJump.ttf")
-              score = Gosu::Image.from_text(@scores[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
-              index_img.draw_rot(66, 153 + (i - @player_index + 7) * 45, ZOrder::UI)
-              name.draw_rot(115, 153 + (i - @player_index + 7) * 45, ZOrder::UI, 0, 0)
-              score.draw_rot(350, 153 + (i - @player_index + 7) * 45, ZOrder::UI, 0, 1)
-            end
-          end
-        else
-          5.upto(@scores.length >= 9 ? 8 : @scores.length-1) do |i|
-            index_img = Gosu::Image.from_markup("<c=E1DCC6>#{i+1}</c>", 28, font: "Arial Black")
-            name = Gosu::Image.from_text(@names[i], 30, bold: true, font: "img/DoodleJump.ttf")
-            score = Gosu::Image.from_text(@scores[i]["score"], 30, bold: true, font: "img/DoodleJump.ttf")
-            index_img.draw_rot(66, 153 + i*45, ZOrder::UI)
-            name.draw_rot(115, 153 + i*45, ZOrder::UI, 0, 0)
-            score.draw_rot(350, 153 + i*45, ZOrder::UI, 0, 1)
-          end
         end
       end
     end
@@ -138,29 +132,37 @@ class LeaderboardState < GameState
           end
         end
         @scores.sort_by! { |row| [-row["score"], row["time"]] }
+        @player_index = @scores.find_index { |row| row["id"].to_s == File.open("info", "r") { |f| f.read } }
+        if @player_index.nil? or (not @player_index.nil? and @player_index < 8)
+          @scores = @scores[0..8]
+          @rank_offset = 0
+        else
+          if @player_index == @scores.length - 1
+            @scores = @scores[0..4] + @scores[(@player_index - 2)..(@player_index)]
+            @rank_offset = @player_index - 7
+          else
+            @scores = @scores[0..4] + @scores[(@player_index - 1)..(@player_index + 1)]
+            @rank_offset = @player_index - 6
+          end
+        end
         puts "i> Done!"
         puts "i> Scores' count: " + @scores.length.to_s
         puts "i> Query leaderboard names..."
         @names = []
         name_array = []
         result = $session.execute("SELECT * FROM names WHERE id IN (#{@scores.map{ |r| r["id"] }.join(", ")})")
-        result.each { |row| name_array << [row["id"], row["name"]] }
+        result.each { |row| name_array << [row["id"].to_s, row["name"]] }
         name_hash = name_array.to_h
+        name_hash[File.open("info", "r") { |f| f.read }] += " (you)" 
         @scores.each do |row|
-          @names << name_hash[row["id"]]
+          @names << name_hash[row["id"].to_s]
         end
-        # @scores.each do |row|
-        #   puts "c> SELECT name FROM names WHERE id = #{row["id"]}"
-        #   result = $session.execute("SELECT name FROM names WHERE id = #{row["id"]}")
-        #   result.each { |row| @names << row["name"] }
-        # end
         puts "i> Done!"
         puts "i> Names' count: " + @names.length.to_s
         if @scores.length == @names.length
           puts "i> Success!"
           @loading = false
           @query_executed = false
-          @query_success = true
         else
           puts "e> An error has occurred!"
           @query_executed = false
@@ -170,15 +172,6 @@ class LeaderboardState < GameState
         puts "e> #{e}"
         @query_executed = false
       end
-    end
-    if @query_success
-      @player_index = @scores.find_index { |row| row["id"].to_s == File.open("info", "r") { |f| f.read } }
-      if @player_index.nil? or (not @player_index.nil? and @player_index < 8)
-        @show_3dot = false
-      else
-        @show_3dot = true
-      end
-      @query_success = false
     end
     if @today_panel.clicked?(@window.mouse_x, @window.mouse_y)
       case @state

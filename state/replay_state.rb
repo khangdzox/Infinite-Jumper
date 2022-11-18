@@ -82,7 +82,7 @@ class ReplayState < GameState
       @edit_button.hide
     end
     if @edit_state
-      @name = @window.text_input.text.gsub(/[^a-zA-Z0-9]/, '')
+      @name = @window.text_input.text.gsub(/[\W]/, '')
       @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
       if Gosu.button_down?(Gosu::KB_RETURN) or Gosu.button_down?(Gosu::KB_ESCAPE) or Gosu.button_down?(Gosu::KB_ENTER) or (Gosu.button_down?(Gosu::MS_LEFT) and not @edit_button.mouse_in?(@window.mouse_x, @window.mouse_y))
         @edit_state = false
