@@ -14,8 +14,6 @@ class PlayState < GameState
     19.downto(-10) do |i|
       @platforms << StaticPlatform.new(30 + rand(341), i * 30)
     end
-
-    @collectible = nil
     
     @player = Player.new(@platforms[0].x, 600)
     @player.jump(-13, 0)
@@ -207,23 +205,24 @@ class PlayState < GameState
         end
       end
 
-      if @collectible.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(50) == 0
-        @collectible, associated_platforms = generate_collectible(@highest_standable_platform.x, @highest_standable_platform.hitbox.top)
-        @platforms += associated_platforms
-        @highest_standable_platform = @platforms.last
-        puts "i> Collectible generated: #{@collectible}"
-      end
+       if @collectible.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(50) == 0
+         @collectible, associated_platforms = generate_collectible(@highest_standable_platform.x, @highest_standable_platform.hitbox.top)
+         @platforms += associated_platforms
+         @highest_standable_platform = @platforms.last
+         puts "i> Collectible generated: #{@collectible}"
+       end
 
-      if @monster.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(50) == 0
-        case rand(5)
-        when 0..3
-          @monster, associated_platforms = generate_scrolling_monster(@highest_standable_platform.x, @highest_standable_platform.hitbox.top)
-          @platforms += associated_platforms
-          @highest_standable_platform = @platforms.last
-        when 4
-          @monster = generate_floating_monster()
-        end
-        puts "i> Monster generated: #{@monster}"
+       if @monster.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(50) == 0
+         case rand(5)
+         when 0..3
+           @monster, associated_platforms = generate_scrolling_monster(@highest_standable_platform.x, @highest_standable_platform.hitbox.top)
+           @platforms += associated_platforms
+           @highest_standable_platform = @platforms.last
+         when 4
+           @monster = generate_floating_monster()
+         end
+         puts "i> Monster generated: #{@monster}"
+        end 
       end
 
       if @player.hitbox.top >= Window::HEIGHT
