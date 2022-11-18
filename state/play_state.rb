@@ -37,6 +37,11 @@ class PlayState < GameState
     @pause = false
     @pause_pressed = false
 
+    @pause = false
+    @pause_pressed = false
+
+    @sfx_star = Gosu::Sample.new('sound/star.mp3')
+    @sfx_health = Gosu::Sample.new('sound/health_regained.mp3')
     puts "i> Game start"
   end
 
