@@ -34,6 +34,8 @@ class PlayState < GameState
     @bgm = Gosu::Song.new('sound/Insert-Quarter.mp3')
     @bgm.volume = 0.4
 
+    @sfx_star = Gosu::Sample.new('sound/star.mp3')
+    @sfx_health = Gosu::Sample.new('sound/health_regained.mp3')
     puts "i> Game start"
   end
 
@@ -111,9 +113,11 @@ class PlayState < GameState
           when :star
             puts ("i> Collect star")
             @player.score += 50
+            @sfx_star.play
           when :health_bottle
             puts ("i> Collect health bottle")
             @player.heart += 1 if @player.heart < 3
+            @sfx_health.play
           when :propeller
             @player.state = :propeller
           when :springshoe
