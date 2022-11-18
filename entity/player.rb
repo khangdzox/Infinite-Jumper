@@ -3,7 +3,7 @@ require "./entity/hitbox"
 require "./entity/collectibles"
 
 class Player
-  attr_accessor :score, :heart, :hitbox, :vx, :vy, :y, :x, :dir, :state
+  attr_accessor :score, :heart, :hitbox, :vx, :vy, :x, :y, :dir, :state
 
   def initialize(x, y)
     @img_left = Gosu::Image.new("img/lik-left.png")
@@ -32,11 +32,11 @@ class Player
   end
 
   def roll
-    @roll = Gosu.milliseconds
+    @roll = $systime
   end
 
   def degree_since_roll
-    time_passed = Gosu.milliseconds - @roll
+    time_passed = $systime - @roll
     if time_passed > 740
       @roll = nil
       return 0
@@ -47,7 +47,7 @@ class Player
 
   def damage
     @heart -= 1
-    @time_start_hurt = Gosu.milliseconds
+    @time_start_hurt = $systime
     @sfx_damage.play
   end
 
@@ -62,7 +62,7 @@ class Player
 
   def is_hurt
     return false if @time_start_hurt.nil?
-    if Gosu.milliseconds - @time_start_hurt > 700
+    if $systime - @time_start_hurt > 1000
       @time_start_hurt = nil
       return false
     else
@@ -164,7 +164,7 @@ class Player
     when 'right'
       img = @img_right
     end
-    if is_hurt and ((Gosu.milliseconds - @time_start_hurt)/50).to_i.even?
+    if is_hurt and (($systime - @time_start_hurt)/50).to_i.even?
       opacity = 0x66_ffffff
     else
       opacity = 0xff_ffffff

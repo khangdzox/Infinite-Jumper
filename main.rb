@@ -1,9 +1,11 @@
 puts "i> Loading cassandra..."
-require "cassandra"
+require "cassandra" # COMMENT THIS FOR QUICK TESTING
 require "./state/menu_state"
 require "./entity/monster"
 require "./entity/hitbox"
 require "./entity/collectibles"
+
+# COMMENT THIS FOR QUICK TESTING
 
 puts "i> Connect to database..."
 cluster = Cassandra.cluster(
@@ -45,6 +47,10 @@ else
   future.on_failure { |e| puts ("e> #{e}") }
 end
 
+# END OF COMMENT
+
+$systime = 0
+
 class MainWindow < Gosu::Window
   attr_accessor :state
 
@@ -52,51 +58,14 @@ class MainWindow < Gosu::Window
     super Window::WIDTH, Window::HEIGHT
     self.caption = "Infinite Jumper"
     @state = state
-    @pause = false
-    @button_pressed = false
-    @time_offset = 0
-    @time_now = Gosu.milliseconds
-    # @star = Star.new(200, 100)
-    # @health_bottle = HealthBottle.new(250, 100)
-    # @propeller = Propeller.new(50, 100)
-    # @springshoe = Springshoe.new(100, 100)
-    # @spikeshoe = Spikeshoe.new(300, 100)
-    # @shield = Shield.new(200, 100)
   end
 
   def draw
-    # @demo.draw
-    # @star.draw
-    # @health_bottle.draw
-    # @propeller.draw
-    # @springshoe.draw
-    # @spikeshoe.draw
-    # @shield.draw
     @state.draw
   end
 
   def update
-    # @star.animate
-    # @star.animate
-    # @propeller.animate
-    # @springshoe.animate
-    if not @pause
-      # @demo.animatea
-      @state.update
-      @time_now = Gosu.milliseconds - @time_offset
-    end
-    # if Gosu.button_down?(Gosu::KB_ESCAPE)
-    #   if not @button_pressed
-    #     @pause = !@pause
-    #     @button_pressed = true
-    #     if !@pause
-    #       @time_offset = Gosu.milliseconds - @time_now
-    #     end
-    #   end
-    # else
-    #   @button_pressed = false
-    # end
-    # puts @time_now/1000
+    @state.update
   end
 
   def switch(new_state)

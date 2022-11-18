@@ -19,7 +19,8 @@ class ReplayState < GameState
     result.each { |r| @name = r["name"] }
     @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
 
-    menu_img, play_again_img, menu_img_pressed, play_again_img_pressed = *Gosu::Image.load_tiles("img/buttons.png", 114, 41)
+    menu_img, menu_img_pressed = *Gosu::Image.load_tiles("img/menu_button.png", 114, 41)
+    play_again_img, play_again_img_pressed  = *Gosu::Image.load_tiles("img/play_again_button.png", 114, 41)
     edit_img, edit_img_pressed = *Gosu::Image.load_tiles("img/edit_button.png", 30, 30)
     @replay_button = Button.new(120, 350, 114, 41, play_again_img, play_again_img_pressed)
     @menu_button = Button.new(280, 350, 114, 41, menu_img, menu_img_pressed)
@@ -29,14 +30,19 @@ class ReplayState < GameState
 
     @edit_state = false
 
-    result = $session.execute("SELECT score FROM scores WHERE id = #{@uuid}")
-    if not result.empty?
-      scores = []
-      result.each { |r| scores << r["score"] }
-      @highscore = scores.max
-      @highscore = @score if @highscore < @score
-    else
-      @highscore = @score
+    @highscore = nil
+    puts ("i> Query scores...")
+    puts ("c> SELECT score FROM scores WHERE id = #{@uuid}")
+    future = $session.execute_async("SELECT score FROM scores WHERE id = #{@uuid}")
+    future.on_success do |result|
+      if not result.empty?
+        scores = []
+        result.each { |r| scores << r["score"] }
+        @highscore = scores.max
+        @highscore = @score if @highscore < @score
+      else
+        @highscore = @score
+      end
     end
 
     puts ("i> Insert new score...")
@@ -105,7 +111,7 @@ class ReplayState < GameState
       @outro = true
       @next_state = MenuState.new(@window)
     end
-    if @replay_button.clicked?(@window.mouse_x, @window.mouse_y) or Gosu.button_down?(Gosu::KB_SPACE) and @outro.nil?
+    if @replay_button.clicked?(@window.mouse_x, @window.mouse_y) or (Gosu.button_down?(Gosu::KB_SPACE) and @outro.nil? and not @edit_state)
       @outro = true
       @next_state = PlayState.new(@window)
     end

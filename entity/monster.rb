@@ -58,6 +58,7 @@ class Monster
     @type = type
     @hitbox = hitbox
     @animation = Animation.new(animation, ani_duration)
+    @is_killed = false
   end
 
   def move(y)
@@ -70,9 +71,17 @@ class Monster
   def action
   end
 
+  def kill
+    @is_killed = true
+  end
+
   def animate
-    @animation.animate
-    action
+    if not @is_killed
+      @animation.animate
+      action
+    else
+      move(-9)
+    end
   end
 
   def draw
@@ -97,19 +106,19 @@ class BouncingMonster < Monster
     @h = 31
     super(x, y, :scrolling_monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/bouncing_monster.png", @w, @h))
     @bounce_delay = 800
-    @bounce_start = Gosu.milliseconds
+    @bounce_start = $systime
     @bounce_count = 0
     @vy = 0
   end
 
   def action
-    if Gosu.milliseconds - @bounce_start >= 0
+    if $systime - @bounce_start >= 0
       @vy += Gravity
       @y += @vy
       if @y >= @base_y
         @y = @base_y
         if @bounce_count == 2
-          @bounce_start = Gosu.milliseconds + @bounce_delay
+          @bounce_start = $systime + @bounce_delay
           @bounce_count = 0
         else
           @vy = -5
@@ -129,11 +138,11 @@ class MovingMonster < Monster
     @w = 80
     @h = 45
     super(x, y, :scrolling_monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/moving_monster.png", @w, @h))
-    @start = Gosu.milliseconds
+    @start = $systime
   end
 
   def action
-    @x = @base_x + Math.cos((Gosu.milliseconds - @start) / 500.0 * Math::PI) * 20.0
+    @x = @base_x + Math.cos(($systime - @start) / 500.0 * Math::PI) * 20.0
     @hitbox.left = @x - @w/2
     @hitbox.right = @x + @w/2
   end
@@ -146,13 +155,13 @@ class FlyingLRMonster < Monster
     @w = 37
     @h = 49
     super(x, y, :scrolling_monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/flying_monster.png", @w, @h))
-    @start = Gosu.milliseconds
+    @start = $systime
     @dir = 1
     @vx = 2
   end
 
   def action
-    @y = @base_y + Math.sin((Gosu.milliseconds - @start) / 500.0 * Math::PI) * 15.0
+    @y = @base_y + Math.sin(($systime - @start) / 500.0 * Math::PI) * 15.0
     @hitbox.top = @y - @h/2
     @hitbox.bottom = @y + @h/2
 
@@ -178,11 +187,11 @@ class FlyingUpMonster < Monster
     @w = 70
     @h = 90
     super(x, y, :floating_monster, Hitbox.new_xywh(x, y, @w, @h), Gosu::Image.load_tiles("img/flying_up_monster.png", @w, @h))
-    @start = Gosu.milliseconds
+    @start = $systime
   end
 
   def action
-    dt = Gosu.milliseconds - @start
+    dt = $systime - @start
     if dt < 1000
       @y = @base_y - (1.0 - (1.0 - dt/1000.0)**3.0) * 35.0
     elsif dt > 1400 and dt < 2400
