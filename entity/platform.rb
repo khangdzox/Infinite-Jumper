@@ -87,7 +87,7 @@ class SpikePlatform
   def change_state
     @sfx_spike.play(0.3)
     @spike = !@spike
-    @start_delay = Gosu.milliseconds
+    @start_delay = $systime
   end
 
   def move_y(y)
@@ -97,9 +97,9 @@ class SpikePlatform
   end
 
   def draw
-    if @spike and (Gosu.milliseconds - @start_delay > @delay_time)
+    if @spike and ($systime - @start_delay > @delay_time)
       @img = @img_active
-    elsif not @spike and (Gosu.milliseconds - @start_delay > @delay_time)
+    elsif not @spike and ($systime - @start_delay > @delay_time)
       @img = @img_normal
     end
     @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
@@ -196,7 +196,7 @@ class VerticalMoveablePlatform
     @h = 15
     @dir = dir
     @vy = 1
-    @t = Gosu.milliseconds
+    @t = $systime
 
     @hitbox = Hitbox.new_xywh(@x, @y, @w, @h)
   end
@@ -212,9 +212,9 @@ class VerticalMoveablePlatform
   end
 
   def move_around
-    if Gosu.milliseconds - @t >= 2500
+    if $systime - @t >= 2500
       @dir = - @dir
-      @t = Gosu.milliseconds
+      @t = $systime
     end
     @y += @vy * @dir
     @hitbox.top += @vy * @dir
@@ -249,7 +249,7 @@ class BreakablePlatform
   end
 
   def break
-    @broken = Gosu.milliseconds and @sfx_break.play(0.5) if @broken == nil
+    @broken = $systime and @sfx_break.play(0.5) if @broken == nil
   end
 
   def drop
@@ -268,9 +268,9 @@ class BreakablePlatform
   def draw
     if @broken == nil
       @img_break[0].draw_rot(@x, @y, ZOrder::PLATFORMS)
-    elsif Gosu.milliseconds - @broken < 50
+    elsif $systime - @broken < 50
       @img_break[1].draw_rot(@x, @y, ZOrder::PLATFORMS)
-    elsif Gosu.milliseconds - @broken < 100
+    elsif $systime - @broken < 100
       @img_break[2].draw_rot(@x, @y, ZOrder::PLATFORMS)
     else
       @img_break[3].draw_rot(@x, @y, ZOrder::PLATFORMS)
