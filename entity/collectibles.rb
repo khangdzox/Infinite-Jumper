@@ -62,6 +62,7 @@ class Collectible
     @animation = @ani_collectible = Animation.new(animation_collectible, ani_duration)
     @ani_activated = Animation.new(animation_activated, ani_duration)
     @activated = false
+    @deactivated = false
     @collected_time = nil
   end 
 
@@ -80,7 +81,7 @@ class Collectible
     @animation = @ani_activated
     custom_activate(player)
   end
- 
+
   def action(player)
   end
 
@@ -88,6 +89,13 @@ class Collectible
     @animation.animate
   end
 
+  def deactivate
+    if not @deactivated
+      @sfx_deactivate.play
+      @deactivated = true
+    end
+  end
+ 
   def remove
     move(-500)
   end
@@ -172,7 +180,7 @@ class Propeller < Collectible
     @x += @vx
     @y += @vy
     @hitbox = Hitbox.new_xywh(@x, @y, 32, 32)
-    @sfx_deactivate.play
+    deactivate()
   end
 end 
 
@@ -212,7 +220,7 @@ class Spikeshoe < Collectible
     @x += @vx
     @y += @vy
     @hitbox = Hitbox.new_xywh(@x, @y+6, 28*@scale, 12*@scale)
-    @sfx_deactivate.play
+    deactivate()
   end 
 
   def draw(dir = 1)
@@ -253,7 +261,7 @@ class Shield < Collectible
     @x += @vx
     @y += @vy
     @hitbox = Hitbox.new_xywh(@x, @y, 96, 96)
-    @sfx_deactivate.play
+    deactivate()
   end
 end
 
@@ -269,6 +277,7 @@ class Springshoe
     @hitbox = Hitbox.new_xywh(x, y+10.5, 28*@scale, 21*@scale)
     @duration = 6000
     @sfx_springshoe = Gosu::Sample.new('sound/springshoes.mp3')
+    @sfx_deactivate = Gosu::Sample.new('sound/deactivate.mp3')
     @animation = @ani_collectible = Gosu::Image.load_tiles('img/springshoes_icon.png', 28, 21)
     @ani_activated = Gosu::Image.load_tiles("img/springshoes.png", 28, 21)
     @ani_index = 0
@@ -276,6 +285,7 @@ class Springshoe
     @ani_duration = 50
     @ani_play = false
     @activated = false
+    @deactivated = false
     @collected_time = nil
     @vx = 2.5 * (rand(2) == 0 ? 1 : -1)
     @vy = -5
@@ -328,7 +338,10 @@ class Springshoe
     @x += @vx
     @y += @vy
     @hitbox = Hitbox.new_xywh(@x, @y+10.5, 28, 21)
-    @sfx_deactivate.play
+    if not @deactivated
+      @sfx_deactivate.play
+      @deactivated = true
+    end
   end
 
   def draw(dir = 1)
