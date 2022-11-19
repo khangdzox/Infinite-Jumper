@@ -34,10 +34,6 @@ class PlayState < GameState
     @bgm = Gosu::Song.new('sound/Insert-Quarter.mp3')
     @bgm.volume = 0.4
 
-    @pause = false
-    @pause_pressed = false
-
-    @pause = false
     @pause_pressed = false
 
     @sfx_star = Gosu::Sample.new('sound/star.mp3')
@@ -46,7 +42,7 @@ class PlayState < GameState
   end
 
   def enter
-    @time_offset = Gosu.milliseconds
+    $time_offset = Gosu.milliseconds
     $systime = 0
 
     @bgm.play(true)
@@ -58,7 +54,7 @@ class PlayState < GameState
 
   def draw
     intro if @intro
-    @pause_background.draw(0, 0, ZOrder::OVERLAY) if @pause
+    @pause_background.draw(0, 0, ZOrder::OVERLAY) if $pause
     @background.draw(0, 0)
     @player.draw
     @player.draw_score
@@ -80,11 +76,7 @@ class PlayState < GameState
 
   def update
 
-    if not @pause
-
-      # System time control
-
-      $systime = Gosu.milliseconds - @time_offset
+    if not $pause
 
       # Scroll
 
@@ -276,10 +268,10 @@ class PlayState < GameState
 
     if Gosu.button_down?(Gosu::KB_ESCAPE)
       if not @pause_pressed
-        @pause = !@pause
+        $pause = !$pause
         @pause_pressed = true
-        if !@pause
-          @time_offset = Gosu.milliseconds - $systime
+        if !$pause
+          $time_offset = Gosu.milliseconds - $systime
         end
       end
     else

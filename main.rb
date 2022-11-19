@@ -25,8 +25,8 @@ if not File.exist?("info")
   puts "e> Information file doesn't exist. Create new file..."
   uuid = Cassandra::Uuid::Generator.new.uuid
   File.write("info", uuid)
-  puts ("c> INSERT INTO names (id, names) VALUES (#{uuid}, 'player')")
-  future = $session.execute_async("INSERT INTO names (id, names) VALUES (#{uuid}, 'player')")
+  puts ("c> INSERT INTO names (id, name) VALUES (#{uuid}, 'player')")
+  future = $session.execute_async("INSERT INTO names (id, name) VALUES (#{uuid}, 'player')")
   future.on_success { puts ("i> Success!") }
   future.on_failure { |e| puts ("e> #{e}") }
 else
@@ -38,8 +38,8 @@ else
       puts "i> ID verified!"
     else
       puts "e> ID is invalid! Update information..."
-      puts ("c> INSERT INTO names (id, names) VALUES (#{uuid}, 'player')")
-      future = $session.execute_async("INSERT INTO names (id, names) VALUES (#{uuid}, 'player')")
+      puts ("c> INSERT INTO names (id, name) VALUES (#{uuid}, 'player')")
+      future = $session.execute_async("INSERT INTO names (id, name) VALUES (#{uuid}, 'player')")
       future.on_success { puts ("i> Success!") }
       future.on_failure { |e| puts ("e> #{e}") }
     end
@@ -50,6 +50,8 @@ end
 # END OF COMMENT
 
 $systime = 0
+$time_offset = Gosu.milliseconds
+$pause = false
 
 class MainWindow < Gosu::Window
   attr_accessor :state
@@ -66,6 +68,7 @@ class MainWindow < Gosu::Window
 
   def update
     @state.update
+    $systime = Gosu.milliseconds - $time_offset if not $pause
   end
 
   def switch(new_state)
