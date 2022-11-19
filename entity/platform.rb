@@ -57,7 +57,7 @@ class StaticPlatform
 
   def draw
     @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
-    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
+    # @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
@@ -103,7 +103,7 @@ class SpikePlatform
       @img = @img_normal
     end
     @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
-    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
+    # @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
@@ -139,7 +139,7 @@ class BoostPlatform
 
   def draw
     @img.draw_rot(@x, @y, ZOrder::PLATFORMS)
-    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
+    # @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
@@ -180,7 +180,7 @@ class HorizontalMoveablePlatform
 
   def draw
     @img_move.draw_rot(@x, @y, ZOrder::PLATFORMS)
-    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
+    # @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
@@ -223,7 +223,7 @@ class VerticalMoveablePlatform
 
   def draw
     @img_move.draw_rot(@x, @y, ZOrder::PLATFORMS)
-    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
+    # @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end
 
@@ -275,6 +275,6 @@ class BreakablePlatform
     else
       @img_break[3].draw_rot(@x, @y, ZOrder::PLATFORMS)
     end
-    @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
+    # @hitbox.draw(@x, @y, ZOrder::PLATFORMS, 0xff_0000ff)
   end
 end

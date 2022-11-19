@@ -88,7 +88,7 @@ class Monster
 
   def draw
     @animation.draw(@x, @y, ZOrder::MONSTERS)
-    @hitbox.draw(@x, @y, ZOrder::MONSTERS, 0xff_ff0000)
+    # @hitbox.draw(@x, @y, ZOrder::MONSTERS, 0xff_ff0000)
   end
 end
 
@@ -177,7 +177,7 @@ class FlyingLRMonster < Monster
 
   def draw
     @animation.draw(@x, @y, ZOrder::MONSTERS, @dir)
-    @hitbox.draw(@x, @y, ZOrder::MONSTERS, 0xff_ff0000)
+    # @hitbox.draw(@x, @y, ZOrder::MONSTERS, 0xff_ff0000)
   end
 end
 

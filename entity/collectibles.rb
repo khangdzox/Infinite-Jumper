@@ -102,7 +102,7 @@ class Collectible
   
   def draw(dir = 1)
     @animation.draw(@x, @y, ZOrder::COLLECTIBLES, dir)
-    @hitbox.draw(@x, @y, ZOrder::COLLECTIBLES, 0xFF_FFBF00)
+    # @hitbox.draw(@x, @y, ZOrder::COLLECTIBLES, 0xFF_FFBF00)
   end
 end 
 
@@ -225,7 +225,7 @@ class Spikeshoe < Collectible
 
   def draw(dir = 1)
     @animation.draw(@x, @y, ZOrder::COLLECTIBLES, dir, 0, 0.5, 0, @scale, @scale)
-    @hitbox.draw(@x, @y, ZOrder::COLLECTIBLES, 0xFF_FFBF00)
+    # @hitbox.draw(@x, @y, ZOrder::COLLECTIBLES, 0xFF_FFBF00)
   end
 end 
 
@@ -346,6 +346,6 @@ class Springshoe
 
   def draw(dir = 1)
     @animation[@ani_index].draw_rot(@x, @y, ZOrder::COLLECTIBLES, 0, 0.5, 0, dir * @scale, @scale) if @animation != []
-    @hitbox.draw(@x, @y, ZOrder::COLLECTIBLES, 0xFF_FFBF00)
+    # @hitbox.draw(@x, @y, ZOrder::COLLECTIBLES, 0xFF_FFBF00)
   end
 end 
