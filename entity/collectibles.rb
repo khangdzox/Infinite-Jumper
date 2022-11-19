@@ -328,6 +328,7 @@ class Springshoe
     @x += @vx
     @y += @vy
     @hitbox = Hitbox.new_xywh(@x, @y+10.5, 28, 21)
+    @sfx_deactivate.play
   end
 
   def draw(dir = 1)
