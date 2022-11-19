@@ -160,7 +160,7 @@ class PlayState < GameState
 
       if not @collectible.nil?
         @collectible.animate
-        if @collectible.hitbox.top > Window::HEIGHT
+        if @collectible.hitbox.top > Window::HEIGHT + 50
           @collectible = nil
         elsif @player.collide_with(@collectible) and @collectible.collected_time == nil
           case @collectible.type

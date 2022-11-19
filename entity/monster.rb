@@ -5,27 +5,29 @@ require "./entity/animation"
 ##
 # Generate a monster that scroll with platforms
 def generate_scrolling_monster(last_x, last_y)
-  x = 60 + (last_x + rand(101) - 50) %280
+  x = 90 + (last_x + rand(101) - 50) %220
   y = last_y - 50
   case rand(4)
   when 3
-    monster = StaticMonster.new(x + rand(31) - 15, y - 25)
+    monster = StaticMonster.new(x + rand(91) - 45, y - 25)
     associated_platforms = [
-      StaticPlatform.new(x-30, y+5),
-      StaticPlatform.new(x+30, y+5),
+      StaticPlatform.new(x, y + 5),
+      StaticPlatform.new(x - 60, y + 5),
+      StaticPlatform.new(x + 60, y + 5),
       StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 80)
     ]
   when 2
-    monster = BouncingMonster.new(x + rand(21) - 10, y - 15)
+    monster = BouncingMonster.new(x + rand(81) - 40, y - 15)
     associated_platforms = [
-      StaticPlatform.new(x-30, y+7),
-      StaticPlatform.new(x+30, y+7),
+      StaticPlatform.new(x, y + 5),
+      StaticPlatform.new(x - 60, y + 5),
+      StaticPlatform.new(x + 60, y + 5),
       StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 80)
     ]
   when 1
     monster = MovingMonster.new(x, y - 25)
     associated_platforms = [
-      StaticPlatform.new(30+(x-170)%340, y+7),
+      StaticPlatform.new(30 + (x - 170) % 340, y + 7),
       StaticPlatform.new(30 + (x + rand(201) - 100) %340, y - 80)
     ]
   when 0

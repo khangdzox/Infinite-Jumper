@@ -51,7 +51,7 @@ class MenuState < GameState
       @outro = true
       @next_state = LeaderboardState.new(@window)
     end
-    if @play_button.clicked?(@window.mouse_x, @window.mouse_y) or Gosu.button_down?(Gosu::KB_SPACE)
+    if @play_button.clicked?(@window.mouse_x, @window.mouse_y) or (Gosu.button_down?(Gosu::KB_SPACE) and @outro.nil?)
       @outro = true
       @next_state = PlayState.new(@window)
     end
