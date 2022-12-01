@@ -12,9 +12,10 @@ class ReplayState < GameState
     @background = Gosu::Image.new("img/background.png")
     @font = Gosu::Font.new(35, bold: true, name: "img/DoodleJump.ttf")
     @game_over = Gosu::Image.new("img/game_over_title.png")
-    @sfx_fall = Gosu::Sample.new('sound/fall.mp3') 
+    @sfx_fall = Gosu::Sample.new("sound/fall.mp3") 
 
     @uuid = File.open("info", "r") { |f| f.read}
+    puts ("i> Query name...")
     result = $session.execute("SELECT name FROM names WHERE id = #{@uuid}")
     result.each { |r| @name = r["name"] }
     @name_text = Gosu::Image.from_text(@name, 35, bold: true, font: "img/DoodleJump.ttf")
@@ -24,7 +25,7 @@ class ReplayState < GameState
     edit_img, edit_img_pressed = *Gosu::Image.load_tiles("img/edit_button.png", 30, 30)
     @replay_button = Button.new(120, 350, 114, 41, play_again_img, play_again_img_pressed)
     @menu_button = Button.new(280, 350, 114, 41, menu_img, menu_img_pressed)
-    @edit_button = Button.new(235 + @name_text.width, 270 + @name_text.height/2, 30, 30, edit_img, edit_img_pressed)
+    @edit_button = Button.new(235 + @name_text.width, 270 + 35/2, 30, 30, edit_img, edit_img_pressed)
 
     @next_state = nil
 
@@ -65,7 +66,7 @@ class ReplayState < GameState
     @font.draw_text("your score: #{@score}", 90, 210, ZOrder::UI, 1, 1, Gosu::Color::BLACK)
     @font.draw_text("your high score: #{@highscore}", 42, 240, ZOrder::UI, 1, 1, Gosu::Color::BLACK)
     @font.draw_text("your name:", 97, 270, ZOrder::UI, 1, 1, Gosu::Color::BLACK)
-    @name_text.draw(220, 270, ZOrder::UI, 1, 1, Gosu::Color::BLACK)
+    @name_text.draw(220, 270, ZOrder::UI, 1, 1, Gosu::Color::BLACK) if @name_text != nil
     @edit_button.draw
     @menu_button.draw
     @replay_button.draw
@@ -103,7 +104,7 @@ class ReplayState < GameState
           future.on_success { puts ("i> Success!") }
         end
         @window.text_input = nil
-        @edit_button.set_xy(235 + @name_text.width, 270 + @name_text.height/2)
+        @edit_button.set_xy(235 + @name_text.width, 270 + 35/2)
         @edit_button.show
       end
     end

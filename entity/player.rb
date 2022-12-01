@@ -182,7 +182,7 @@ class Player
     else
       img.draw_rot(@x, @y, ZOrder::PLAYER, degree_since_roll, 0.5, 0.5, 1, 1, opacity)
     end
-    @hitbox.draw(@x, @y, ZOrder::PLAYER, 0xff_008000)
+    # @hitbox.draw(@x, @y, ZOrder::PLAYER, 0xff_008000)
     @img_stars.draw_rot(@x, @y, ZOrder::PLAYER, 0, 0.5, 0.5, 1, 1, opacity) if is_hurt or is_dead
   end
 
