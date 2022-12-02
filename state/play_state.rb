@@ -29,6 +29,8 @@ class PlayState < GameState
     # @button_pressed = false
 
     @background = Gosu::Image.new("img/background.png")
+    pause_img, pause_img_pressed = Gosu::Image.load_tiles("img/pause_button.png", 30, 30)
+    @pause_button = Button.new(380, 20, 30, 30, pause_img, pause_img_pressed)
     @pause_background = Gosu::Image.new("img/pause_background.png")
 
     @bgm = Gosu::Song.new('sound/Insert-Quarter.mp3')
@@ -59,6 +61,7 @@ class PlayState < GameState
     @player.draw
     @player.draw_score
     @player.draw_heart
+    @pause_button.draw
     @platforms.each do |platform|
       platform.draw
     end
@@ -266,7 +269,7 @@ class PlayState < GameState
       end
     end
 
-    if Gosu.button_down?(Gosu::KB_ESCAPE)
+    if Gosu.button_down?(Gosu::KB_ESCAPE) || @pause_button.clicked?(@window.mouse_x, @window.mouse_y)
       if not @pause_pressed
         $pause = !$pause
         @pause_pressed = true
