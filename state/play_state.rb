@@ -25,9 +25,6 @@ class PlayState < GameState
 
     @monster = nil
 
-    # @pause = false
-    # @button_pressed = false
-
     @background = Gosu::Image.new("img/background.png")
     pause_img, pause_img_pressed = Gosu::Image.load_tiles("img/pause_button.png", 30, 30)
     @pause_button = Button.new(380, 20, 30, 30, pause_img, pause_img_pressed)
@@ -210,8 +207,6 @@ class PlayState < GameState
       end
 
       ##
-      # @TODO: Warm-up don't spawn spike, boost, collectibles and monsters
-
       # Generate
 
       if @platforms.last.hitbox.top > 5
