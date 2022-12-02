@@ -239,7 +239,7 @@ class PlayState < GameState
         end
       end
 
-      if @player.state != :propeller and @player.score > 300
+      if @player.state == :normal and @player.score > 300
         if @collectible.nil? and @highest_standable_platform.hitbox.bottom < 0 and rand(50) == 0
           @collectible, associated_platforms = generate_collectible(@highest_standable_platform.x, @highest_standable_platform.hitbox.top)
           @platforms += associated_platforms

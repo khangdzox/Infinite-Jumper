@@ -153,7 +153,7 @@ class LeaderboardState < GameState
         result = $session.execute("SELECT * FROM names WHERE id IN (#{@scores.map{ |r| r["id"] }.join(", ")})")
         result.each { |row| name_array << [row["id"].to_s, row["name"]] }
         name_hash = name_array.to_h
-        name_hash[File.open("info", "r") { |f| f.read }] += " (you)" 
+        name_hash[File.open("info", "r") { |f| f.read }] += " (you)" if not name_hash[File.open("info", "r") { |f| f.read }].nil?
         @scores.each do |row|
           @names << name_hash[row["id"].to_s]
         end
