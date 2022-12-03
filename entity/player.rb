@@ -194,6 +194,6 @@ class Player
     @heart.times do |i|
       @img_heart.draw_rot(25 + i*35, 25, ZOrder::UI)
     end
-    # Gosu::Image.new("img/health.png").draw_rot(130, 25, ZOrder::UI)
+    
   end
 end

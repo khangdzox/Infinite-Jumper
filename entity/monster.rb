@@ -3,7 +3,7 @@ require "./entity/platform"
 require "./entity/animation"
 
 ##
-# Generate a monster that scroll with platforms
+# Generate a monster that scrolls with platforms
 def generate_scrolling_monster(last_x, last_y)
   x = 90 + (last_x + rand(101) - 50) %220
   y = last_y - 50
@@ -40,7 +40,7 @@ def generate_scrolling_monster(last_x, last_y)
 end
 
 ##
-# Generate a monster that floating on the screen
+# Generate a monster that floats on the screen
 def generate_floating_monster
   case rand(2)
   when 1
@@ -95,7 +95,7 @@ class Monster
 end
 
 ##
-# Monster that stay static on two platforms
+# Monster that stays static on two platforms
 class StaticMonster < Monster
   def initialize(x, y)
     super(x, y, :scrolling_monster, Hitbox.new_xywh(x, y, 82, 46), Gosu::Image.load_tiles("img/static_monster.png", 82, 52))
@@ -103,7 +103,7 @@ class StaticMonster < Monster
 end
 
 ##
-# Monster that bounce on two platforms
+# Monster that bounces on two platforms
 class BouncingMonster < Monster
   def initialize(x, y)
     @w = 91
@@ -136,7 +136,7 @@ class BouncingMonster < Monster
 end
 
 ##
-# Monster that hang in the mid-air and slightly move left and right
+# Monster that hangs in the mid-air and slightly move left and right
 class MovingMonster < Monster
   def initialize(x, y)
     @w = 80
@@ -153,7 +153,7 @@ class MovingMonster < Monster
 end
 
 ##
-# Monster that fly from one edge of the screen to the another
+# Monster that flies from one edge of the screen to the another
 class FlyingLRMonster < Monster
   def initialize(x, y)
     @w = 37
@@ -184,7 +184,7 @@ class FlyingLRMonster < Monster
 end
 
 ##
-# Monster that fly from the bottom to the top of the screen
+# Monster that flies from the bottom to the top of the screen
 # Spawn at y = 640
 class FlyingUpMonster < Monster
   def initialize(x, y)
