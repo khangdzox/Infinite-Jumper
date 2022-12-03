@@ -61,7 +61,7 @@ class PlayState < GameState
     @player.draw
     @player.draw_score
     @player.draw_heart
-    @pause_button.draw
+    @pause_button.draw(ZOrder::OVERLAYd)
     @platforms.each do |platform|
       platform.draw
     end

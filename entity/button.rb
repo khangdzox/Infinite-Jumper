@@ -50,8 +50,8 @@ class Button
     @availability = true
   end
 
-  def draw
-    @img.draw_rot(@x, @y, ZOrder::UI) if @availability
+  def draw(z = ZOrder::UI)
+    @img.draw_rot(@x, @y, z) if @availability
   end
 end
 
