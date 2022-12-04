@@ -64,7 +64,7 @@ class Player
 
   def is_hurt
     return false if @time_start_hurt.nil?
-    if $systime - @time_start_hurt > 1000
+    if $systime - @time_start_hurt > 700
       @time_start_hurt = nil
       return false
     else
