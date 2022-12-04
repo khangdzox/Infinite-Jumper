@@ -10,7 +10,7 @@ class MenuState < GameState
     super(window)
     @font = Gosu::Font.new(40, name: "img/DoodleJump.ttf")
     @background = Gosu::Image.new("img/background.png")
-    @title = Gosu::Image.new("img/doodle-jump.png")
+    @title = Gosu::Image.new("img/infinite-jumper.png")
     play_img, play_img_pressed = Gosu::Image.load_tiles("img/play_button.png", 111, 40)
     leaderboard_img, leaderboard_img_pressed = Gosu::Image.load_tiles("img/leaderboard_button.png", 134, 41)
     ins_img, ins_img_pressed = Gosu::Image.load_tiles("img/instruction_button.png", 114, 41)
