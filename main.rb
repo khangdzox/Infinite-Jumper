@@ -9,9 +9,9 @@ require "./entity/collectibles"
 
 puts "i> Connect to database..."
 cluster = Cassandra.cluster(
-  username: "NpbvnzkKWqbBazJFqClnFkSi",
-  password: "FwY2Zb6BQlWgMq-IrCjOa6GRWO,KdOLD.,bCK0Wd_ZIPT3X42piH9I2LL6by5Kx3RZ7hjp+Zxi+9,ZZ+B+,KBBXHy+Sw_XB5sPt_BfBSjcMm6kk4o1htct_jwyFZTxDR",
-  hosts: ["937149b8-f8b5-4495-8275-07c69cfd17e0-asia-south1.db.astra.datastax.com"],
+  username: "OQDTNndCGEjhTHDZpvXgnIkF",
+  password: "Avh0MZwOJYppJ.yB4MhS-,Nt+y8,AcLvNz+nB609TXn.Z9X_Z8LazxZDkptZiZxGwcvpQQ-Yma9-OQo0ocm3Qp8UhgMQZ_PLsteiXccuL8ZD9uQoFG5HDNfWOZnJQ-ei",
+  hosts: ["7da26e1a-51b6-4e58-9bd7-69224ad06723-asia-south1.db.astra.datastax.com"],
   port: 29042,
   server_cert: "./etc/ssl/certs/astra-secure-connect/ca.crt",
   client_cert: "./etc/ssl/certs/astra-secure-connect/cert",

@@ -58,7 +58,7 @@ class PlayState < GameState
     @player.draw
     @player.draw_score
     @player.draw_heart
-    @pause_button.draw(ZOrder::OVERLAYd)
+    @pause_button.draw(ZOrder::OVERLAY)
     @platforms.each do |platform|
       platform.draw
     end
@@ -192,7 +192,7 @@ class PlayState < GameState
       if not @monster.nil?
         @monster.animate
         if not @player.is_dead and not @player.is_hurt and @player.collide_with(@monster) # and @player.powerup.type != :propeller
-          if @player.state == :normal or @player.state == :spring
+          if @player.state == :normal or @player.state == :spring or @player.state == :boost
             @player.damage
             @player.bounce_off(@player.x > @monster.x ? 1 : -1)
           elsif @player.hitbox.bottom <= @monster.hitbox.bottom and @player.vy > 0 and @player.state == :spike
